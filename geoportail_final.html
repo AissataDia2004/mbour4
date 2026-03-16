@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Géoportail - Direction de l'Urbanisme de Thiès</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        #map {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 0;
+        }
+        
+        .equipement-marker {
+            background: none;
+            border: none;
+            text-align: center;
+        }
+        
+        .leaflet-popup-content {
+            margin: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .leaflet-popup-content table {
+            border-collapse: collapse;
+        }
+        
+        .leaflet-popup-content tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+             /* Style pour les numéros de parcelles */
+.parcel-number-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.parcel-number-label {
+    background: transparent;
+    color: #1e40af;
+    padding: 0;
+    border: none;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1;
+    display: inline-block;
+    text-shadow: 
+        -1px -1px 0 white,
+        1px -1px 0 white,
+        -1px 1px 0 white,
+        1px 1px 0 white,
+        0 0 3px white;
+}
+
+/* Styles pour le menu des communes */
+        .commune-selector {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 10px;
+        }
+
+        .commune-selector h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .commune-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+        }
+
+        .commune-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .commune-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .commune-checkbox label {
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            user-select: none;
+        }
+
+        .commune-checkbox label:hover {
+            color: #1e40af;
+        }
+        
+         /* Carte du footer */
+        #footerMap {
+            width: 100%;
+            height: 200px;
+            margin-top: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Animation du marker */
+        .custom-footer-marker {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #footerMap {
+                height: 180px;
+            }
+        }
+
+        /* Styles pour le menu des communes */
+    .commune-selector {
+        background: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-top: 10px;
+    }
+
+    .commune-selector-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        padding: 5px 0;
+    }
+
+    .commune-selector-header:hover h4 {
+        color: #2563eb;
+    }
+
+    .commune-selector h4 {
+        margin: 0;
+        font-size: 14px;
+        color: #1e40af;
+        font-weight: 600;
+        transition: color 0.3s;
+    }
+
+    .toggle-icon {
+        font-size: 18px;
+        transition: transform 0.3s ease;
+        color: #1e40af;
+    }
+
+    .toggle-icon.open {
+        transform: rotate(180deg);
+    }
+
+    .commune-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease, margin-top 0.4s ease, opacity 0.3s ease;
+        opacity: 0;
+    }
+
+    .commune-checkboxes.open {
+        max-height: 500px;
+        margin-top: 15px;
+        opacity: 1;
+    }
+
+    .commune-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .commune-checkbox input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #2563eb;
+    }
+
+    .commune-checkbox label {
+        cursor: pointer;
+        font-size: 13px;
+        color: #374151;
+        user-select: none;
+    }
+
+    .commune-checkbox label:hover {
+        color: #1e40af;
+    }
+
+    </style>
+</head>
+<body>
+     <!-- Utilisateur connecté -->
+<script>
+    const CURRENT_USER = {
+        username: "<?= htmlspecialchars($user['username']) ?>",
+        role:     "<?= htmlspecialchars($user['role']) ?>",
+        nom:      "<?= htmlspecialchars($user['nom']) ?>",
+        icon:     "<?= htmlspecialchars($user['icon']) ?>"
+    };
+</script>
+
+    <!-- Page Header -->
+  <section class="page-header">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <h2>Géoportail de Thiès</h2>
+            <p style="margin-top: 10px; font-size: 1.1rem;">Cartographie interactive du territoire</p>
+        </div>
+        <div style="text-align:right;">
+            <span style="color:white; font-size:0.95rem;">
+                <?= $user['icon'] ?> <?= htmlspecialchars($user['nom']) ?>
+            </span><br>
+            <a href="logout.php" style="color:#fca5a5; font-size:0.85rem; text-decoration:none;">
+                ⬡ Déconnexion
+            </a>
+        </div>
+    </div>
+</section>
+
+    <!-- Geoportal Content -->
+    <section class="geoportal-section">
+        <div class="container-fluid">
+            <div class="geoportal-grid">
+                <!-- Map Area -->
+                <div class="map-area">
+                    <!-- Search and Filters -->
+                    <div class="map-controls">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Rechercher une parcelle, un équipement...">
+                            <button onclick="searchMap()">🔍</button>
+                        </div>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" onclick="toggleLayer('parcelles')">Parcelles </button>
+                            <button class="filter-btn active" onclick="toggleLayer('equipements')"> Équipements</button>
+                            <button class="filter-btn active" onclick="toggleLayer('routes')">Routes</button>
+                         </div>
+                    </div>
+                    <!-- Sélecteur de communes -->
+                <div class="commune-selector">
+                    <div class="commune-selector-header" onclick="toggleCommuneMenu()">
+                        <h4>📍 Communes</h4>
+                        <span class="toggle-icon" id="toggleIcon">▼</span>
+                    </div>
+                    <div class="commune-checkboxes" id="communeCheckboxes">
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-nord" onchange="toggleCommune('nord')">
+                            <label for="commune-nord">Thiès Nord</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-est" onchange="toggleCommune('est')">
+                            <label for="commune-est">Thiès Est</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-ouest" onchange="toggleCommune('ouest')">
+                            <label for="commune-ouest">Thiès Ouest</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-fandene" onchange="toggleCommune('fandene')">
+                            <label for="commune-fandene">Fandène</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-notto" onchange="toggleCommune('notto')">
+                            <label for="commune-notto">Notto</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-ngoundiane" onchange="toggleCommune('ngoundiane')">
+                            <label for="commune-ngoundiane">Ngoundiane</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-kayar" onchange="toggleCommune('kayar')">
+                            <label for="commune-kayar">Kayar</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-thienaba" onchange="toggleCommune('thienaba')">
+                            <label for="commune-thienaba">Thiènaba</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-ndieyene_sirakh" onchange="toggleCommune('ndieyene_sirakh')">
+                            <label for="commune-ndieyene_sirakh">Ndieyene Sirakh</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-keur_mousseu" onchange="toggleCommune('keur_mousseu')">
+                            <label for="commune-keur_mousseu">Keur Mousseu</label>
+                        </div>
+                        <div class="commune-checkbox">
+                            <input type="checkbox" id="commune-diender" onchange="toggleCommune('diender')">
+                            <label for="commune-diender">Diender</label>
+                        </div>
+                    </div>
+                </div>
+
+                    <!-- Leaflet Map -->
+                    <div id="map"></div>
+                    
+                    <!-- Légende -->
+                    
+                </div>
+
+                <!-- Sidebar -->
+                <div class="map-sidebar">
+                    <!-- Selected Parcel Info -->
+                    <div class="info-panel">
+                        <h3>Informations Parcelle</h3>
+                        <div id="parcelInfo" class="parcel-details">
+                            <p class="no-selection">Cliquez sur une parcelle pour voir les détails</p>
+                        </div>
+                    </div>
+
+                    <!-- Selected Equipement Info -->
+                    <div class="info-panel">
+                        <h3>Informations Équipement</h3>
+                        <div id="equipementInfo" class="equipement-details">
+                            <p class="no-selection">Cliquez sur un équipement pour voir les détails</p>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="stats-panel">
+                        <h3>Statistiques</h3>
+                        <div class="stat-item">
+                            <span class="stat-label">Parcelles totales</span>
+                            <span class="stat-value" id="totalParcels">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Routes</span>
+                            <span class="stat-value" id="totalRoutes">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Équipements</span>
+                            <span class="stat-value" id="totalEquipements">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Direction de l'Urbanisme</h4>
+                    <p>Ville de Thiès - Sénégal</p>
+                     <!-- Carte de localisation -->
+                    <div id="footerMap"></div>
+                </div>
+                <div>
+                    <h4>Liens Rapides</h4>
+                    <ul>
+                        <li><a href="#">Mentions légales</a></li>
+                        <li><a href="#">Politique de confidentialité</a></li>
+                        <li><a href="#">Plan du site</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <p>Avenue Lamine Guèye, Thiès</p>
+                    <p>urbanisme@ville-thies.sn</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Direction de l'Urbanisme de Thiès - Tous droits réservés</p>
+            </div>
+        </div>
+    </footer>
+    <!-- Script pour initialiser la carte -->
+    <script>
+        // Attendre que tout soit chargé
+        window.addEventListener('load', function() {
+            console.log('Initialisation de la carte footer...');
+            
+            setTimeout(function() {
+                try {
+                    // Vérifier que Leaflet est bien chargé
+                    if (typeof L === 'undefined') {
+                        console.error('Leaflet n\'est pas chargé !');
+                        return;
+                    }
+                    
+                    // Vérifier que l'élément existe
+                    const mapElement = document.getElementById('footerMap');
+                    if (!mapElement) {
+                        console.error('Élément #footerMap introuvable !');
+                        return;
+                    }
+                    
+                    console.log('Création de la carte...');
+                    
+                    // Coordonnées de Q3V9+RQH, Thiès
+                    const lat = 14.79503;
+                    const lng = -16.9306;
+                    
+                    // Créer la carte
+                    const footerMap = L.map('footerMap', {
+                        center: [lat, lng],
+                        zoom: 15,
+                        zoomControl: true,
+                        scrollWheelZoom: false,
+                        dragging: true,
+                        touchZoom: true,
+                        doubleClickZoom: true
+                    });
+                    
+                    console.log('Ajout du fond de carte...');
+                    
+                    // Ajouter le fond de carte
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap',
+                        maxZoom: 19
+                    }).addTo(footerMap);
+                    
+                    // Créer l'icône personnalisée
+                    const customIcon = L.divIcon({
+                        className: 'custom-footer-marker',
+                        html: `
+                            <div style="
+                                background: #ef4444;
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 50% 50% 50% 0;
+                                transform: rotate(-45deg);
+                                border: 3px solid white;
+                                box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            ">
+                                <span style="
+                                    color: white;
+                                    font-size: 20px;
+                                    transform: rotate(45deg);
+                                ">🏛️</span>
+                            </div>
+                        `,
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40],
+                        popupAnchor: [0, -40]
+                    });
+                    
+                    // Ajouter le marker
+                    const marker = L.marker([lat, lng], { icon: customIcon }).addTo(footerMap);
+                    
+                    // Ajouter le popup
+                    marker.bindPopup(`
+                        <div style="text-align: center; padding: 8px;">
+                            <strong style="color: #1e40af; font-size: 15px;">Direction de l'Urbanisme</strong><br>
+                            <span style="color: #6b7280; font-size: 13px;">Ville de Thiès</span><br>
+                            <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" 
+                               target="_blank" 
+                               style="color: #3b82f6; font-size: 12px; text-decoration: none; margin-top: 8px; display: inline-block; font-weight: bold;">
+                               📍 Ouvrir dans Google Maps →
+                            </a>
+                        </div>
+                    `).openPopup();
+                    
+                    // Ajuster la taille
+                    setTimeout(function() {
+                        footerMap.invalidateSize();
+                    }, 250);
+                    
+                    console.log('✅ Carte footer initialisée avec succès !');
+                    
+                } catch (error) {
+                    console.error('❌ Erreur lors de l\'initialisation de la carte:', error);
+                }
+            }, 500); // Attendre 500ms pour s'assurer que tout est chargé
+        });
+
+        // Fonction pour toggle le menu des communes
+        function toggleCommuneMenu() {
+            const checkboxes = document.getElementById('communeCheckboxes');
+            const icon = document.getElementById('toggleIcon');
+            
+            checkboxes.classList.toggle('open');
+            icon.classList.toggle('open');
+        }
+
+        // Optionnel : Ouvrir automatiquement au chargement de la page
+        // Décommentez les lignes suivantes si vous voulez que le menu soit ouvert par défaut
+        /*
+        window.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.getElementById('communeCheckboxes');
+            const icon = document.getElementById('toggleIcon');
+            checkboxes.classList.add('open');
+            icon.classList.add('open');
+        });
+        */
+    </script>
+
+    <script src="script.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Géoportail avec données PostgreSQL -->
+    <script src="geoportail_data.js"></script>
+</body>
+</html>

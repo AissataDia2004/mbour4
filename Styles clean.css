@@ -1,0 +1,604 @@
+/* ============================================================
+   GÉOPORTAIL — Direction de l'Urbanisme de Thiès
+   CSS nettoyé · Uniquement les styles de index.php
+   Palette : Identité sénégalaise officielle + élégance institutionnelle
+   ============================================================ */
+
+/* ── Variables de design ───────────────────────────────────── */
+:root {
+  /* Couleurs officielles Sénégal */
+  --vert:        #00853F;   /* vert drapeau */
+  --jaune:       #FDEF42;   /* jaune drapeau */
+  --rouge:       #E31B23;   /* rouge drapeau */
+
+  /* Palette institutionnelle dérivée */
+  --bleu-nuit:   #0B2545;   /* marine profond */
+  --bleu-royal:  #1B4F8A;   /* bleu institutionnel */
+  --bleu-clair:  #3A7BD5;   /* boutons / liens actifs */
+  --or:          #C8963E;   /* or sénégalais */
+  --sable:       #F5F0E8;   /* fond ivoire/sable */
+  --blanc:       #FFFFFF;
+  --gris-texte:  #374151;
+  --gris-clair:  #E5E7EB;
+  --gris-moyen:  #6B7280;
+
+  /* Typographie */
+  --font-titre:  'Playfair Display', 'Georgia', serif;
+  --font-corps:  'Source Sans 3', 'Segoe UI', sans-serif;
+
+  /* Ombres */
+  --shadow-sm:   0 2px 6px rgba(11,37,69,.08);
+  --shadow-md:   0 4px 16px rgba(11,37,69,.12);
+  --shadow-lg:   0 8px 32px rgba(11,37,69,.18);
+
+  /* Rayons */
+  --radius:      10px;
+  --radius-lg:   16px;
+}
+
+/* ── Reset minimal ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-corps);
+  background: var(--sable);
+  color: var(--gris-texte);
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* ── Utilitaires conteneur ─────────────────────────────────── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+}
+
+.container-fluid {
+  width: 100%;
+  padding: 0 20px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE HEADER — Bandeau officiel
+   ══════════════════════════════════════════════════════════════ */
+.page-header {
+  position: relative;
+  background: linear-gradient(135deg, var(--bleu-nuit) 0%, var(--bleu-royal) 60%, #1a5fa8 100%);
+  color: var(--blanc);
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Bande tricolore sénégalaise en haut */
+.page-header::before {
+  content: '';
+  display: block;
+  height: 6px;
+  background: linear-gradient(to right,
+    var(--vert) 0%,
+    var(--vert) 33.33%,
+    var(--jaune) 33.33%,
+    var(--jaune) 66.66%,
+    var(--rouge) 66.66%,
+    var(--rouge) 100%
+  );
+}
+
+/* Motif géométrique décoratif */
+.page-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 80% 50%, rgba(200,150,62,.12) 0%, transparent 50%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 30px,
+      rgba(255,255,255,.018) 30px,
+      rgba(255,255,255,.018) 31px
+    );
+  pointer-events: none;
+}
+
+.page-header .container {
+  position: relative;
+  z-index: 1;
+  padding: 28px 24px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Bloc gauche — identité */
+.page-header .header-identity {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Espace drapeau SVG / img */
+.page-header .drapeau {
+  width: 54px;
+  height: 36px;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.35);
+  display: flex;
+}
+.page-header .drapeau .bande { flex: 1; }
+.page-header .drapeau .bande-vert  { background: var(--vert); }
+.page-header .drapeau .bande-jaune { background: var(--jaune); display:flex; align-items:center; justify-content:center; }
+.page-header .drapeau .bande-rouge { background: var(--rouge); }
+.page-header .drapeau .etoile {
+  color: var(--vert);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.page-header .header-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.page-header .republique {
+  font-family: var(--font-corps);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--jaune);
+  opacity: .95;
+}
+
+.page-header .direction {
+  font-family: var(--font-titre);
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--blanc);
+  letter-spacing: .01em;
+}
+
+.page-header .ville {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,.72);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Bloc droit — utilisateur */
+.page-header .header-user {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.page-header .user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--blanc);
+}
+
+.page-header .user-role {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,.6);
+  margin-top: 2px;
+}
+
+.page-header .btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 4px 12px;
+  background: rgba(227,27,35,.25);
+  border: 1px solid rgba(227,27,35,.5);
+  border-radius: 20px;
+  color: #fca5a5;
+  font-size: 0.78rem;
+  text-decoration: none;
+  transition: background .25s, border-color .25s;
+}
+
+.page-header .btn-logout:hover {
+  background: rgba(227,27,35,.45);
+  border-color: var(--rouge);
+  color: #fff;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SECTION GÉOPORTAIL
+   ══════════════════════════════════════════════════════════════ */
+.geoportal-section {
+  padding: 28px 0 40px;
+}
+
+.geoportal-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── Zone carte ────────────────────────────────────────────── */
+.map-area {
+  background: var(--blanc);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  border: 1px solid var(--gris-clair);
+}
+
+/* ── Contrôles carte ───────────────────────────────────────── */
+.map-controls {
+  padding: 14px 16px;
+  background: #F8FAFC;
+  border-bottom: 1px solid var(--gris-clair);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.search-box {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid var(--gris-clair);
+  transition: border-color .2s;
+}
+
+.search-box:focus-within {
+  border-color: var(--bleu-clair);
+  box-shadow: 0 0 0 3px rgba(58,123,213,.12);
+}
+
+.search-box input {
+  flex: 1;
+  padding: 9px 14px;
+  border: none;
+  font-size: .92rem;
+  font-family: var(--font-corps);
+  background: var(--blanc);
+  color: var(--gris-texte);
+  outline: none;
+}
+
+.search-box input::placeholder { color: #9CA3AF; }
+
+.search-box button {
+  padding: 9px 16px;
+  background: var(--bleu-royal);
+  color: var(--blanc);
+  border: none;
+  font-size: .95rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.search-box button:hover { background: var(--bleu-nuit); }
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border: 1.5px solid var(--gris-clair);
+  background: var(--blanc);
+  border-radius: 20px;
+  font-size: .83rem;
+  font-family: var(--font-corps);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  color: var(--gris-texte);
+}
+
+.filter-btn:hover {
+  border-color: var(--bleu-clair);
+  color: var(--bleu-clair);
+}
+
+.filter-btn.active {
+  background: var(--bleu-royal);
+  color: var(--blanc);
+  border-color: var(--bleu-royal);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Sélecteur communes ────────────────────────────────────── */
+.commune-selector {
+  background: var(--blanc);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gris-clair);
+}
+
+.commune-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
+}
+
+.commune-selector h4 {
+  margin: 0;
+  font-size: .88rem;
+  font-family: var(--font-corps);
+  font-weight: 700;
+  color: var(--bleu-royal);
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.commune-selector-header:hover h4 { color: var(--bleu-clair); }
+
+.toggle-icon {
+  font-size: .85rem;
+  color: var(--bleu-royal);
+  transition: transform .3s ease;
+  display: inline-block;
+}
+
+.toggle-icon.open { transform: rotate(180deg); }
+
+.commune-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 6px 12px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height .4s ease, margin-top .3s ease, opacity .3s ease;
+}
+
+.commune-checkboxes.open {
+  max-height: 300px;
+  margin-top: 12px;
+  opacity: 1;
+}
+
+.commune-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 0;
+}
+
+.commune-checkbox input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--vert);
+  flex-shrink: 0;
+}
+
+.commune-checkbox label {
+  cursor: pointer;
+  font-size: .83rem;
+  color: var(--gris-texte);
+  user-select: none;
+  transition: color .2s;
+}
+
+.commune-checkbox label:hover { color: var(--bleu-royal); }
+
+/* ── Carte Leaflet ─────────────────────────────────────────── */
+#map {
+  width: 100%;
+  height: 560px;
+  display: block;
+}
+
+/* Numéros de parcelles */
+.parcel-number-marker { background: transparent !important; border: none !important; }
+
+.parcel-number-label {
+  background: transparent;
+  color: var(--bleu-nuit);
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1;
+  text-shadow:
+    -1px -1px 0 white, 1px -1px 0 white,
+    -1px  1px 0 white, 1px  1px 0 white,
+    0 0 4px white;
+}
+
+/* Popup */
+.leaflet-popup-content {
+  margin: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: var(--font-corps);
+}
+
+.leaflet-popup-content table { border-collapse: collapse; }
+.leaflet-popup-content tr:nth-child(even) { background-color: #f9fafb; }
+
+/* ── Sidebar ───────────────────────────────────────────────── */
+.map-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Info panel */
+.info-panel,
+.stats-panel {
+  background: var(--blanc);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gris-clair);
+}
+
+.info-panel h3,
+.stats-panel h3 {
+  font-family: var(--font-titre);
+  color: var(--bleu-nuit);
+  font-size: 1.05rem;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--vert);
+  letter-spacing: .01em;
+}
+
+.parcel-details { font-size: .88rem; }
+
+.parcel-details .no-selection {
+  text-align: center;
+  color: var(--gris-moyen);
+  padding: 24px 0;
+  font-style: italic;
+}
+
+/* Statistiques */
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--gris-clair);
+}
+
+.stat-item:last-child { border-bottom: none; }
+
+.stat-label { color: var(--gris-moyen); font-size: .85rem; }
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--bleu-clair);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════════════════════ */
+footer {
+  background: linear-gradient(160deg, var(--bleu-nuit) 0%, #0d2d55 100%);
+  color: rgba(255,255,255,.85);
+  padding: 40px 0 0;
+  margin-top: 48px;
+  position: relative;
+}
+
+/* Bande tricolore en bas du footer */
+footer::after {
+  content: '';
+  display: block;
+  height: 5px;
+  background: linear-gradient(to right,
+    var(--vert) 0%, var(--vert) 33.33%,
+    var(--jaune) 33.33%, var(--jaune) 66.66%,
+    var(--rouge) 66.66%, var(--rouge) 100%
+  );
+  margin-top: 40px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px;
+  padding-bottom: 32px;
+}
+
+footer h4 {
+  font-family: var(--font-titre);
+  font-size: 1rem;
+  color: var(--blanc);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+  letter-spacing: .02em;
+}
+
+footer p {
+  font-size: .86rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,.65);
+}
+
+footer ul { list-style: none; padding: 0; }
+
+footer ul li { padding: 5px 0; }
+
+footer a {
+  color: rgba(255,255,255,.6);
+  text-decoration: none;
+  font-size: .86rem;
+  transition: color .2s;
+}
+
+footer a:hover { color: var(--jaune); }
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding: 16px 0;
+  text-align: center;
+  color: rgba(255,255,255,.4);
+  font-size: .8rem;
+}
+
+/* Carte footer */
+#footerMap {
+  width: 100%;
+  height: 180px;
+  margin-top: 14px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,.35);
+  border: 2px solid rgba(255,255,255,.15);
+}
+
+.custom-footer-marker {
+  animation: bounce 2.2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .geoportal-grid {
+    grid-template-columns: 1fr;
+  }
+  .map-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .info-panel, .stats-panel {
+    flex: 1;
+    min-width: 240px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-header .container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 16px 18px;
+  }
+  .page-header .header-user { text-align: left; }
+  .page-header .direction { font-size: 1.2rem; }
+  #map { height: 380px; }
+  .footer-grid { grid-template-columns: 1fr; }
+  #footerMap { height: 150px; }
+}
