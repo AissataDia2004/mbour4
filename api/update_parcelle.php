@@ -30,24 +30,28 @@ if (!$data) {
     exit();
 }
 
-// Récupérer l'ID ou GID
+// Récupérer l'ID
 $id = $data['id'] ?? null;
-$gid = $data['gid'] ?? null;
-
-if (!$id && !$gid) {
+if (!$id) {
     http_response_code(400);
-    echo json_encode(['error' => 'ID ou GID manquant']);
+    echo json_encode(['error' => 'ID manquant']);
     exit();
 }
 
 // Liste des champs autorisés à être modifiés
-$allowed_fields = ['liste_attributaire', 'adresse', 'attribution_2026', 'prenom_nom', 'n_parcelle', 'cni', 'tel', 'recensement', 'observation', 'recommendation', 'statut'];
-$update_data = [];
+$allowed_fields = ['liste_attributaire', 'attribution_2026', 'prenom_nom', 'n_parcelle', 'cni', 'tel', 'recensement', 'observation', 'recommendation'];
 
+// Préparer les données à mettre à jour
+$update_data = [];
 foreach ($data as $key => $value) {
     if (in_array($key, $allowed_fields)) {
         $update_data[$key] = $value;
     }
+}
+
+// ⚡ Mise à jour automatique du statut
+if (isset($data['prenom_nom'])) {
+    $update_data['statut'] = !empty($data['prenom_nom']) ? 'affecte' : 'non affecte';
 }
 
 if (empty($update_data)) {
@@ -57,7 +61,7 @@ if (empty($update_data)) {
 }
 
 // Construire le filtre Supabase
-$filter = $id ? "id=eq.$id" : "gid=eq.$gid";
+$filter = "id=eq.$id";
 
 // Appeler Supabase REST (PATCH)
 $result = supabaseUpdate('parcelle', $filter, $update_data);
