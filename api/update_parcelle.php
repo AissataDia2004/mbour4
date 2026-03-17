@@ -60,7 +60,7 @@ if (empty($update_data)) {
 $filter = $id ? "id=eq.$id" : "gid=eq.$gid";
 
 // Appeler Supabase REST (PATCH)
-$result = supabaseUpdate('parcelles', $filter, $update_data);
+$result = supabaseUpdate('parcelle', $filter, $update_data);
 
 if (isset($result['error'])) {
     http_response_code(500);
