@@ -442,6 +442,25 @@ $user = getCurrentUser();
             display: flex;
             gap: 0.4rem;
         }
+        <!-- Bouton ajouter parcelle -->
+<button id="btnAddParcelle" onclick="startDrawParcelle()" style="
+    padding: 0.5rem 1rem;
+    background: var(--vert);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+">
+    ＋ Ajouter parcelle
+</button>
 
         .filter-tab {
             padding: 0.5rem 1rem;
@@ -1070,6 +1089,131 @@ $user = getCurrentUser();
                 <div class="panel-body">
                     <div id="parcelInfo">
                         <p class="no-selection">Cliquez sur une parcelle pour afficher les détails</p>
+                    </div>
+                    <!-- Formulaire ajout — caché par défaut -->
+                    <div id="addParcelForm" style="display:none;">
+
+                        <div style="background:#e8f5ec; border:1px solid #c8e6d0; border-radius:8px;
+                            padding:10px 12px; margin-bottom:14px; font-size:0.8rem; color:#1a7a3c;">
+                            🖱️ <strong>Dessinez</strong> la parcelle sur la carte en cliquant pour placer les points.
+                            Double-cliquez pour terminer.
+                        </div>
+
+                        <!-- ID auto -->
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                ID (auto)
+                            </label>
+                            <input type="text" id="newParcelId" readonly value="—" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px;
+                                font-size:0.85rem; background:#f9fafb; color:#6b7280;">
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                N° Parcelle *
+                            </label>
+                            <input type="text" id="new_n_parcelle" placeholder="ex: P-2026-001" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                Prénom & Nom
+                            </label>
+                            <input type="text" id="new_prenom_nom" placeholder="Attributaire" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                Adresse
+                            </label>
+                            <input type="text" id="new_adresse" placeholder="Adresse" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
+                        </div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:600;
+                                    color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                    Téléphone
+                                </label>
+                                <input type="text" id="new_tel" placeholder="77 000 00 00" style="
+                                    width:100%; padding:7px 10px;
+                                    border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
+                            </div>
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:600;
+                                    color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                    CNI
+                                </label>
+                                <input type="text" id="new_cni" placeholder="N° CNI" style="
+                                    width:100%; padding:7px 10px;
+                                    border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                Statut
+                            </label>
+                            <select id="new_statut" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px;
+                                font-family:'Outfit',sans-serif; font-size:0.85rem; background:white;">
+                                <option value="non affecté">Non affecté</option>
+                                <option value="affecté">Affecté</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                Observation
+                            </label>
+                            <textarea id="new_observation" rows="2" placeholder="Observation..." style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px;
+                                font-family:'Outfit',sans-serif; font-size:0.85rem; resize:vertical;"></textarea>
+                        </div>
+
+                        <!-- Indicateur dessin -->
+                        <div id="drawStatus" style="
+                            text-align:center; padding:8px;
+                            border-radius:6px; font-size:0.8rem;
+                            background:#fff3cd; color:#856404;
+                            margin-bottom:12px; display:none;">
+                            ✏️ En attente du dessin sur la carte...
+                        </div>
+
+                        <div style="display:flex; gap:8px;">
+                            <button onclick="saveNewParcelle()" style="
+                                flex:1; padding:9px;
+                                background:var(--vert); color:white;
+                                border:none; border-radius:6px;
+                                font-family:'Outfit',sans-serif;
+                                font-weight:600; font-size:0.85rem; cursor:pointer;">
+                                💾 Enregistrer
+                            </button>
+                            <button onclick="cancelAddParcelle()" style="
+                                flex:1; padding:9px;
+                                background:#f3f4f6; color:#6b7280;
+                                border:1px solid var(--border); border-radius:6px;
+                                font-family:'Outfit',sans-serif;
+                                font-weight:600; font-size:0.85rem; cursor:pointer;">
+                                ✕ Annuler
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

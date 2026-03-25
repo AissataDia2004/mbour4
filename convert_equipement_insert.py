@@ -26,18 +26,18 @@ for line in lines:
     id_0 = values[0].strip()
     geom = values[1].strip().replace("'", "")
     id = values[2].strip()
-    Nom= values[3].strip()
+    nom= values[3].strip()
     
 
     row = (
         f"({id_0}, ST_GeomFromWKB(decode('{geom}','hex'),4326), "
-        f"{Nom}, {id})"
+        f"{nom}, {id})"
     )
 
     rows.append(row)
 
 sql = """INSERT INTO public.parcelles
-(id_0, geom, Nom, id)
+(id_0, geom, nom, id)
 VALUES
 """ + ",\n".join(rows) + ";"
 

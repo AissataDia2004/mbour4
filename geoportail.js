@@ -921,3 +921,178 @@ function switchBasemap(type) {
     currentBasemap = type;
     document.getElementById('basemapPanel').classList.remove('open');
 }
+
+// ===== AJOUT PARCELLE =====
+let drawingMode   = false;
+let drawnPoints   = [];
+let drawMarkers   = [];
+let drawPolyline  = null;
+let drawPolygon   = null;
+
+async function startDrawParcelle() {
+
+    // Récupérer le prochain ID
+    const res  = await fetch(API_URL + 'next_id.php');
+    const data = await res.json();
+    document.getElementById('newParcelId').value = data.next_id || '—';
+
+    // Afficher le formulaire, cacher les infos
+    document.getElementById('parcelInfo').style.display    = 'none';
+    document.getElementById('addParcelForm').style.display = 'block';
+    document.getElementById('parcelPanelTitle').textContent = 'Nouvelle Parcelle';
+    document.getElementById('drawStatus').style.display    = 'block';
+
+    // Changer le curseur de la carte
+    map.getContainer().style.cursor = 'crosshair';
+
+    // Activer le mode dessin
+    drawingMode  = true;
+    drawnPoints  = [];
+    drawMarkers  = [];
+    drawPolyline = null;
+    drawPolygon  = null;
+
+    // Changer le bouton
+    const btn = document.getElementById('btnAddParcelle');
+    btn.textContent  = '⬛ Annuler dessin';
+    btn.style.background = '#ef4444';
+    btn.onclick      = cancelAddParcelle;
+
+    // Écouter les clics sur la carte
+    map.on('click',    onMapDrawClick);
+    map.on('dblclick', onMapDrawDblClick);
+}
+
+function onMapDrawClick(e) {
+    if (!drawingMode) return;
+
+    drawnPoints.push([e.latlng.lng, e.latlng.lat]);
+
+    // Marker point
+    const m = L.circleMarker(e.latlng, {
+        radius: 5, color: '#1a7a3c', fillColor: '#1a7a3c',
+        fillOpacity: 1, weight: 2
+    }).addTo(map);
+    drawMarkers.push(m);
+
+    // Dessiner la ligne en cours
+    if (drawPolyline) map.removeLayer(drawPolyline);
+    if (drawnPoints.length > 1) {
+        const latlngs = drawnPoints.map(p => [p[1], p[0]]);
+        drawPolyline = L.polyline(latlngs, {
+            color: '#1a7a3c', weight: 2, dashArray: '6 4'
+        }).addTo(map);
+    }
+
+    // Mise à jour statut
+    document.getElementById('drawStatus').innerHTML =
+        `✏️ ${drawnPoints.length} point(s) — double-cliquez pour terminer`;
+}
+
+function onMapDrawDblClick(e) {
+    if (!drawingMode || drawnPoints.length < 3) {
+        alert('Tracez au moins 3 points pour former une parcelle.');
+        return;
+    }
+
+    // Fermer le polygone
+    drawnPoints.push(drawnPoints[0]);
+    const latlngs = drawnPoints.map(p => [p[1], p[0]]);
+
+    // Afficher le polygone final
+    if (drawPolyline) map.removeLayer(drawPolyline);
+    drawPolygon = L.polygon(latlngs, {
+        color: '#1a7a3c', fillColor: '#22c55e',
+        fillOpacity: 0.4, weight: 2
+    }).addTo(map);
+
+    // Désactiver le mode dessin (mais garder les données)
+    map.off('click',    onMapDrawClick);
+    map.off('dblclick', onMapDrawDblClick);
+    map.getContainer().style.cursor = '';
+
+    document.getElementById('drawStatus').style.background = '#d1fae5';
+    document.getElementById('drawStatus').style.color      = '#065f46';
+    document.getElementById('drawStatus').innerHTML =
+        `✅ Polygone tracé (${drawnPoints.length - 1} points) — remplissez le formulaire`;
+}
+
+async function saveNewParcelle() {
+
+    if (!drawPolygon && drawnPoints.length < 3) {
+        alert('Vous devez d\'abord dessiner la parcelle sur la carte.');
+        return;
+    }
+
+    const n_parcelle = document.getElementById('new_n_parcelle').value.trim();
+    if (!n_parcelle) {
+        alert('Le numéro de parcelle est obligatoire.');
+        document.getElementById('new_n_parcelle').focus();
+        return;
+    }
+
+    // Construire le GeoJSON de la géométrie
+    const geomJson = JSON.stringify({
+        type: 'Polygon',
+        coordinates: [drawnPoints]
+    });
+
+    const payload = {
+        n_parcelle:     n_parcelle,
+        prenom_nom:     document.getElementById('new_prenom_nom').value,
+        adresse:        document.getElementById('new_adresse').value,
+        tel:            document.getElementById('new_tel').value,
+        cni:            document.getElementById('new_cni').value,
+        statut:         document.getElementById('new_statut').value,
+        observation:    document.getElementById('new_observation').value,
+        geom:           geomJson
+    };
+
+    try {
+        showLoadingMessage('Enregistrement...');
+        const res    = await fetch(API_URL + 'add_parcelle.php', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(payload)
+        });
+        const result = await res.json();
+        hideLoadingMessage();
+
+        if (result.success) {
+            alert(`✅ ${result.message}`);
+            cancelAddParcelle();
+            await loadParcelles(); // recharger la carte
+            updateStatistics();
+        } else {
+            alert('❌ Erreur : ' + result.error);
+        }
+    } catch (err) {
+        hideLoadingMessage();
+        alert('❌ Erreur réseau : ' + err.message);
+    }
+}
+
+function cancelAddParcelle() {
+    // Nettoyer la carte
+    drawingMode = false;
+    map.off('click',    onMapDrawClick);
+    map.off('dblclick', onMapDrawDblClick);
+    map.getContainer().style.cursor = '';
+
+    drawMarkers.forEach(m => map.removeLayer(m));
+    drawMarkers = [];
+    drawnPoints = [];
+    if (drawPolyline) { map.removeLayer(drawPolyline); drawPolyline = null; }
+    if (drawPolygon)  { map.removeLayer(drawPolygon);  drawPolygon  = null; }
+
+    // Restaurer l'UI
+    document.getElementById('parcelInfo').style.display    = 'block';
+    document.getElementById('addParcelForm').style.display = 'none';
+    document.getElementById('parcelPanelTitle').textContent = 'Informations Parcelle';
+    document.getElementById('drawStatus').style.display    = 'none';
+
+    const btn = document.getElementById('btnAddParcelle');
+    btn.textContent      = '＋ Ajouter parcelle';
+    btn.style.background = 'var(--vert)';
+    btn.onclick          = startDrawParcelle;
+}
