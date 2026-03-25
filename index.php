@@ -442,25 +442,6 @@ $user = getCurrentUser();
             display: flex;
             gap: 0.4rem;
         }
-        <!-- Bouton ajouter parcelle -->
-<button id="btnAddParcelle" onclick="startDrawParcelle()" style="
-    padding: 0.5rem 1rem;
-    background: var(--vert);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    transition: all 0.2s;
-    white-space: nowrap;
-">
-    ＋ Ajouter parcelle
-</button>
 
         .filter-tab {
             padding: 0.5rem 1rem;
@@ -984,6 +965,25 @@ $user = getCurrentUser();
                     <input type="text" id="searchInput" placeholder="Rechercher une parcelle, un numéro...">
                     <button onclick="searchMap()">🔍</button>
                 </div>
+                <!-- Bouton ajouter parcelle -->
+                <button id="btnAddParcelle" onclick="startDrawParcelle()" style="
+                    padding: 0.5rem 1rem;
+                    background: var(--vert);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-family: 'Outfit', sans-serif;
+                    font-size: 0.82rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                    transition: all 0.2s;
+                    white-space: nowrap;
+                ">
+                    ＋ Ajouter parcelle
+                </button>
                 <div class="filter-tabs">
                     <button id="btn-parcelles" class="filter-tab active" onclick="toggleLayer('parcelles')">
                 Parcelles
