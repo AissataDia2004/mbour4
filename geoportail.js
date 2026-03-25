@@ -931,34 +931,50 @@ let drawPolygon   = null;
 
 async function startDrawParcelle() {
 
-    // Récupérer le prochain ID
-    const res  = await fetch(API_URL + 'next_id.php');
-    const data = await res.json();
-    document.getElementById('newParcelId').value = data.next_id || '—';
+    try {
+        const res  = await fetch(API_URL + 'next_id.php');
 
-    // Afficher le formulaire, cacher les infos
+        // Vérifier si la réponse est bien du JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await res.text();
+            console.error('Réponse non-JSON reçue:', text);
+            alert('Erreur serveur — vérifiez api/next_id.php\n\n' + text.substring(0, 200));
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data.error) {
+            alert('Erreur API : ' + data.error);
+            return;
+        }
+
+        document.getElementById('newParcelId').value = data.next_id || '—';
+
+    } catch (err) {
+        alert('Erreur connexion : ' + err.message);
+        return;
+    }
+
+    // Suite du code existant...
     document.getElementById('parcelInfo').style.display    = 'none';
     document.getElementById('addParcelForm').style.display = 'block';
     document.getElementById('parcelPanelTitle').textContent = 'Nouvelle Parcelle';
     document.getElementById('drawStatus').style.display    = 'block';
 
-    // Changer le curseur de la carte
     map.getContainer().style.cursor = 'crosshair';
-
-    // Activer le mode dessin
     drawingMode  = true;
     drawnPoints  = [];
     drawMarkers  = [];
     drawPolyline = null;
     drawPolygon  = null;
 
-    // Changer le bouton
     const btn = document.getElementById('btnAddParcelle');
-    btn.textContent  = '⬛ Annuler dessin';
+    btn.textContent      = '⬛ Annuler dessin';
     btn.style.background = '#ef4444';
-    btn.onclick      = cancelAddParcelle;
+    btn.onclick          = cancelAddParcelle;
 
-    // Écouter les clics sur la carte
     map.on('click',    onMapDrawClick);
     map.on('dblclick', onMapDrawDblClick);
 }
