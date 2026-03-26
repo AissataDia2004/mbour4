@@ -1143,7 +1143,7 @@ $user = getCurrentUser();
             <!-- Info parcelle -->
             <div class="panel">
                 <div class="panel-header">
-                    <h3>Informations Parcelle</h3>
+                    <h3 id="parcelPanelTitle">Informations Parcelle</h3>
                 </div>
                 <div class="panel-body">
                     <div id="parcelInfo">

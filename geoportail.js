@@ -932,24 +932,15 @@ let drawPolygon   = null;
 async function startDrawParcelle() {
 
     try {
-        const res  = await fetch(API_URL + 'next_id.php');
-
-        // Vérifier si la réponse est bien du JSON
+        const res = await fetch(API_URL + 'next_id.php');
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await res.text();
-            console.error('Réponse non-JSON reçue:', text);
-            alert('Erreur serveur — vérifiez api/next_id.php\n\n' + text.substring(0, 200));
+            alert('Erreur serveur\n\n' + text.substring(0, 300));
             return;
         }
-
         const data = await res.json();
-
-        if (data.error) {
-            alert('Erreur API : ' + data.error);
-            return;
-        }
-
+        if (data.error) { alert('Erreur API : ' + data.error); return; }
         document.getElementById('newParcelId').value = data.next_id || '—';
 
     } catch (err) {
@@ -957,41 +948,69 @@ async function startDrawParcelle() {
         return;
     }
 
-    // Suite du code existant...
-    document.getElementById('parcelInfo').style.display    = 'none';
-    document.getElementById('addParcelForm').style.display = 'block';
-    document.getElementById('parcelPanelTitle').textContent = 'Nouvelle Parcelle';
-    document.getElementById('drawStatus').style.display    = 'block';
+    // Cacher parcelInfo, afficher addParcelForm
+    const parcelInfo = document.getElementById('parcelInfo');
+    const addForm    = document.getElementById('addParcelForm');
+    const drawStatus = document.getElementById('drawStatus');
 
-    map.getContainer().style.cursor = 'crosshair';
+    if (parcelInfo) parcelInfo.style.display = 'none';
+    if (addForm)    addForm.style.display    = 'block';
+    if (drawStatus) {
+        drawStatus.style.display     = 'block';
+        drawStatus.style.background  = '#fff3cd';
+        drawStatus.style.color       = '#856404';
+        drawStatus.innerHTML         = '✏️ Cliquez sur la carte pour placer les points...';
+    }
+
+    // Changer le titre du panel si l'élément existe
+    const title = document.getElementById('parcelPanelTitle');
+    if (title) title.textContent = 'Nouvelle Parcelle';
+
+    // Préparer le dessin
     drawingMode  = true;
     drawnPoints  = [];
     drawMarkers  = [];
     drawPolyline = null;
     drawPolygon  = null;
 
-    const btn = document.getElementById('btnAddParcelle');
-    btn.textContent      = '⬛ Annuler dessin';
-    btn.style.background = '#ef4444';
-    btn.onclick          = cancelAddParcelle;
+    // Curseur crosshair sur la carte
+    map.getContainer().style.cursor = 'crosshair';
 
-    map.on('click',    onMapDrawClick);
-    map.on('dblclick', onMapDrawDblClick);
+    // IMPORTANT : désactiver les popups pendant le dessin
+    map.closePopup();
+    if (layers.parcelles) layers.parcelles.eachLayer(l => l.off('click'));
+
+    // Changer le bouton
+    const btn = document.getElementById('btnAddParcelle');
+    if (btn) {
+        btn.textContent      = '⬛ Annuler dessin';
+        btn.style.background = '#ef4444';
+        btn.onclick          = cancelAddParcelle;
+    }
+
+    // Attacher les événements APRÈS un court délai
+    // (évite que le clic sur le bouton soit capturé comme premier point)
+    setTimeout(() => {
+        map.on('click',    onMapDrawClick);
+        map.on('dblclick', onMapDrawDblClick);
+        console.log('Mode dessin activé');
+    }, 300);
 }
 
 function onMapDrawClick(e) {
     if (!drawingMode) return;
 
+    // Empêcher la propagation vers les couches parcelles
+    L.DomEvent.stopPropagation(e.originalEvent);
+
     drawnPoints.push([e.latlng.lng, e.latlng.lat]);
 
-    // Marker point
     const m = L.circleMarker(e.latlng, {
         radius: 5, color: '#1a7a3c', fillColor: '#1a7a3c',
         fillOpacity: 1, weight: 2
     }).addTo(map);
     drawMarkers.push(m);
 
-    // Dessiner la ligne en cours
     if (drawPolyline) map.removeLayer(drawPolyline);
     if (drawnPoints.length > 1) {
         const latlngs = drawnPoints.map(p => [p[1], p[0]]);
@@ -1000,39 +1019,46 @@ function onMapDrawClick(e) {
         }).addTo(map);
     }
 
-    // Mise à jour statut
-    document.getElementById('drawStatus').innerHTML =
+    const drawStatus = document.getElementById('drawStatus');
+    if (drawStatus) drawStatus.innerHTML =
         `✏️ ${drawnPoints.length} point(s) — double-cliquez pour terminer`;
 }
 
 function onMapDrawDblClick(e) {
-    L.DomEvent.stopPropagation(e); // ← AJOUTER cette ligne en premier
-    L.DomEvent.preventDefault(e);
-    if (!drawingMode || drawnPoints.length < 3) {
+    if (!drawingMode) return;
+
+    // Stopper le zoom par double-clic de Leaflet
+    L.DomEvent.stopPropagation(e.originalEvent);
+    L.DomEvent.preventDefault(e.originalEvent);
+    map.off('dblclick', onMapDrawDblClick);
+
+    if (drawnPoints.length < 3) {
         alert('Tracez au moins 3 points pour former une parcelle.');
+        map.on('dblclick', onMapDrawDblClick);
         return;
     }
+
+    drawingMode = false;
 
     // Fermer le polygone
     drawnPoints.push(drawnPoints[0]);
     const latlngs = drawnPoints.map(p => [p[1], p[0]]);
 
-    // Afficher le polygone final
     if (drawPolyline) map.removeLayer(drawPolyline);
     drawPolygon = L.polygon(latlngs, {
         color: '#1a7a3c', fillColor: '#22c55e',
         fillOpacity: 0.4, weight: 2
     }).addTo(map);
 
-    // Désactiver le mode dessin (mais garder les données)
-    map.off('click',    onMapDrawClick);
-    map.off('dblclick', onMapDrawDblClick);
+    map.off('click', onMapDrawClick);
     map.getContainer().style.cursor = '';
 
-    document.getElementById('drawStatus').style.background = '#d1fae5';
-    document.getElementById('drawStatus').style.color      = '#065f46';
-    document.getElementById('drawStatus').innerHTML =
-        `✅ Polygone tracé (${drawnPoints.length - 1} points) — remplissez le formulaire`;
+    const drawStatus = document.getElementById('drawStatus');
+    if (drawStatus) {
+        drawStatus.style.background = '#d1fae5';
+        drawStatus.style.color      = '#065f46';
+        drawStatus.innerHTML = `✅ Polygone tracé (${drawnPoints.length - 1} points) — remplissez le formulaire`;
+    }
 }
 
 async function saveNewParcelle() {
@@ -1091,7 +1117,6 @@ async function saveNewParcelle() {
 }
 
 function cancelAddParcelle() {
-    // Nettoyer la carte
     drawingMode = false;
     map.off('click',    onMapDrawClick);
     map.off('dblclick', onMapDrawDblClick);
@@ -1103,14 +1128,30 @@ function cancelAddParcelle() {
     if (drawPolyline) { map.removeLayer(drawPolyline); drawPolyline = null; }
     if (drawPolygon)  { map.removeLayer(drawPolygon);  drawPolygon  = null; }
 
+    // Restaurer les clics sur les parcelles
+    if (layers.parcelles) {
+        layers.parcelles.eachLayer(layer => {
+            layer.on('click', function() {
+                displayParcelInfo(layer.feature.properties);
+            });
+        });
+    }
+
     // Restaurer l'UI
-    document.getElementById('parcelInfo').style.display    = 'block';
-    document.getElementById('addParcelForm').style.display = 'none';
-    document.getElementById('parcelPanelTitle').textContent = 'Informations Parcelle';
-    document.getElementById('drawStatus').style.display    = 'none';
+    const parcelInfo = document.getElementById('parcelInfo');
+    const addForm    = document.getElementById('addParcelForm');
+    const title      = document.getElementById('parcelPanelTitle');
+    const drawStatus = document.getElementById('drawStatus');
+
+    if (parcelInfo) parcelInfo.style.display = 'block';
+    if (addForm)    addForm.style.display    = 'none';
+    if (title)      title.textContent        = 'Informations Parcelle';
+    if (drawStatus) drawStatus.style.display = 'none';
 
     const btn = document.getElementById('btnAddParcelle');
-    btn.textContent      = '＋ Ajouter parcelle';
-    btn.style.background = 'var(--vert)';
-    btn.onclick          = startDrawParcelle;
+    if (btn) {
+        btn.textContent      = '＋ Ajouter parcelle';
+        btn.style.background = 'var(--vert)';
+        btn.onclick          = startDrawParcelle;
+    }
 }
