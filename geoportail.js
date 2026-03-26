@@ -1006,6 +1006,8 @@ function onMapDrawClick(e) {
 }
 
 function onMapDrawDblClick(e) {
+    L.DomEvent.stopPropagation(e); // ← AJOUTER cette ligne en premier
+    L.DomEvent.preventDefault(e);
     if (!drawingMode || drawnPoints.length < 3) {
         alert('Tracez au moins 3 points pour former une parcelle.');
         return;

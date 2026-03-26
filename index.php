@@ -394,7 +394,7 @@ $user = getCurrentUser();
             background: white;
             border-radius: 16px;
             box-shadow: 0 4px 24px var(--shadow);
-            overflow: hidden;
+            overflow: visible;
             border: 1px solid var(--border);
         }
 
@@ -1033,50 +1033,109 @@ $user = getCurrentUser();
                 </div>
             </div>
 
-            <!-- Map -->
-<div id="map" style="position:relative;">
-    <!-- Basemap Switcher -->
-    <div class="basemap-control" id="basemapControl">
-        <div class="basemap-panel" id="basemapPanel">
-            <div class="basemap-panel-title">🗺️ Fond de carte</div>
+<!-- Map + contrôles superposés -->
+            <div style="position:relative; width:100%; height:560px;">
 
-            <div class="basemap-option active" id="opt-osm" onclick="switchBasemap('osm')">
-                <div class="basemap-info"><strong>OpenStreetMap</strong><span>Plan standard</span></div>
-                <span class="basemap-check">✔</span>
-            </div>
+                <!-- Carte Leaflet -->
+                <div id="map" style="width:100%; height:100%;"></div>
 
-            <div class="basemap-option" id="opt-satellite" onclick="switchBasemap('satellite')">
-                <div class="basemap-info"><strong>Satellite</strong><span>Vue aérienne</span></div>
-                <span class="basemap-check">✔</span>
-            </div>
+                <!-- Basemap Switcher — par-dessus la carte -->
+                <div class="basemap-control" id="basemapControl" style="position:absolute; top:10px; right:16px; z-index:1000;">
+                    <div class="basemap-panel" id="basemapPanel">
+                        <div class="basemap-panel-title">🗺️ Fond de carte</div>
+                        <div class="basemap-option active" id="opt-osm" onclick="switchBasemap('osm')">
+                            <div class="basemap-info"><strong>OpenStreetMap</strong><span>Plan standard</span></div>
+                            <span class="basemap-check">✔</span>
+                        </div>
+                        <div class="basemap-option" id="opt-satellite" onclick="switchBasemap('satellite')">
+                            <div class="basemap-info"><strong>Satellite</strong><span>Vue aérienne</span></div>
+                            <span class="basemap-check">✔</span>
+                        </div>
+                        <div class="basemap-option" id="opt-hybrid" onclick="switchBasemap('hybrid')">
+                            <div class="basemap-info"><strong>Hybride</strong><span>Satellite + noms</span></div>
+                            <span class="basemap-check">✔</span>
+                        </div>
+                        <div class="basemap-option" id="opt-topo" onclick="switchBasemap('topo')">
+                            <div class="basemap-info"><strong>Topographique</strong><span>Relief & contours</span></div>
+                            <span class="basemap-check">✔</span>
+                        </div>
+                        <div class="basemap-option" id="opt-dark" onclick="switchBasemap('dark')">
+                            <div class="basemap-info"><strong>Sombre</strong><span>Mode nuit</span></div>
+                            <span class="basemap-check">✔</span>
+                        </div>
+                    </div>
+                    <button class="basemap-btn" onclick="toggleBasemapPanel()" title="Changer le fond de carte">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a7a3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                            <polyline points="2 12 12 17 22 12"/>
+                        </svg>
+                    </button>
+                </div>
 
-            <div class="basemap-option" id="opt-hybrid" onclick="switchBasemap('hybrid')">
-                <div class="basemap-info"><strong>Hybride</strong><span>Satellite + noms</span></div>
-                <span class="basemap-check">✔</span>
-            </div>
+                <!-- Légende — en bas à gauche -->
+                <div id="legendeCategories" style="
+                    position:absolute; bottom:24px; left:16px;
+                    z-index:1000; background:white; border-radius:10px;
+                    padding:10px 14px; box-shadow:0 4px 14px rgba(0,0,0,0.2);
+                    border:1px solid #e5e7eb; font-family:'Outfit',sans-serif;
+                    font-size:0.75rem; min-width:190px;">
+                    <div style="font-weight:700; font-size:0.7rem; letter-spacing:0.1em;
+                        text-transform:uppercase; color:#9ca3af;
+                        margin-bottom:8px; border-bottom:1px solid #f3f4f6; padding-bottom:4px;">
+                        Légende
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                        <svg width="16" height="16" style="flex-shrink:0; border:1px solid #121312; border-radius:2px;">
+                            <defs><pattern id="leg1" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
+                                <line x1="0" y1="0" x2="0" y2="4" stroke="#121312" stroke-width="1.5"/>
+                            </pattern></defs>
+                            <rect width="16" height="16" fill="url(#leg1)"/>
+                        </svg>
+                        Autres existants
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                        <svg width="16" height="16" style="flex-shrink:0; border:1px solid #f97316; border-radius:2px;">
+                            <defs><pattern id="leg2" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(-45)">
+                                <line x1="0" y1="0" x2="0" y2="4" stroke="#f97316" stroke-width="1.5"/>
+                            </pattern></defs>
+                            <rect width="16" height="16" fill="url(#leg2)"/>
+                        </svg>
+                        Empiètement de la rue
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                        <svg width="16" height="16" style="flex-shrink:0; border:1px solid #8b5cf6; border-radius:2px;">
+                            <defs><pattern id="leg3" patternUnits="userSpaceOnUse" width="5" height="5">
+                                <line x1="0" y1="0" x2="0" y2="5" stroke="#8b5cf6" stroke-width="1.2"/>
+                                <line x1="0" y1="0" x2="5" y2="0" stroke="#8b5cf6" stroke-width="1.2"/>
+                            </pattern></defs>
+                            <rect width="16" height="16" fill="url(#leg3)"/>
+                        </svg>
+                        Occupation 2026
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                        <svg width="16" height="16" style="flex-shrink:0; border:1px solid #6b7280; border-radius:2px;">
+                            <defs><pattern id="leg4" patternUnits="userSpaceOnUse" width="5" height="5">
+                                <circle cx="2.5" cy="2.5" r="1.2" fill="#6b7280"/>
+                            </pattern></defs>
+                            <rect width="16" height="16" fill="url(#leg4)"/>
+                        </svg>
+                        À modifier
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <svg width="16" height="16" style="flex-shrink:0; border:1px solid #ef4444; border-radius:2px;">
+                            <defs><pattern id="leg5" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(90)">
+                                <line x1="0" y1="0" x2="0" y2="4" stroke="#ef4444" stroke-width="1.5"/>
+                            </pattern></defs>
+                            <rect width="16" height="16" fill="url(#leg5)"/>
+                        </svg>
+                        A modifier (urgent)
+                    </div>
+                </div>
 
-            <div class="basemap-option" id="opt-topo" onclick="switchBasemap('topo')">
-                <div class="basemap-info"><strong>Topographique</strong><span>Relief & contours</span></div>
-                <span class="basemap-check">✔</span>
-            </div>
+            </div><!-- fin wrapper carte -->
 
-            <div class="basemap-option" id="opt-dark" onclick="switchBasemap('dark')">
-                <div class="basemap-info"><strong>Sombre</strong><span>Mode nuit</span></div>
-                <span class="basemap-check">✔</span>
-            </div>
-        </div>
-
-        <!-- Bouton icône couches -->
-        <button class="basemap-btn" onclick="toggleBasemapPanel()" title="Changer le fond de carte">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a7a3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                <polyline points="2 17 12 22 22 17"/>
-                <polyline points="2 12 12 17 22 12"/>
-            </svg>
-        </button>
-    </div>
-</div>
-        </div>
+        </div><!-- fin .map-area -->
 
         <!-- Sidebar -->
         <div class="sidebar">
