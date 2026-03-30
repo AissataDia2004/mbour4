@@ -34,16 +34,16 @@ try {
     // ── Appel RPC ──
     $rpcPayload = json_encode([
         'p_id'                 => $newId,
-        'p_n_parcelle'         => $data['n_parcelle']         ?? null,
-        'p_liste_attributaire' => $data['liste_attributaire'] ?? null,
-        'p_attribution_2026'   => $data['attribution_2026']   ?? null,
-        'p_prenom_nom'         => $data['prenom_nom']          ?? null,
-        'p_cni'                => $data['cni']                 ?? null,
-        'p_tel'                => $data['tel']                 ?? null,
-        'p_recensement'        => $data['recensement']         ?? null,
-        'p_observation'        => $data['observation']         ?? null,
-        'p_recommendation'     => $data['recommendation']      ?? null,
-        'p_statut'             => $data['statut']              ?? 'non affecté',
+        'p_n_parcelle'         => $data['n_parcelle'] ?? null,
+        'p_liste_attributaire' => $data['liste_attributaire'] ?? '',
+        'p_attribution_2026'   => $data['attribution_2026'] ?? '',
+        'p_prenom_nom'         => $data['prenom_nom'] ?? '',
+        'p_cni'                => $data['cni'] ?? '',
+        'p_tel'                => $data['tel'] ?? '',
+        'p_recensement'        => $data['recensement'] ?? '',
+        'p_observation'        => $data['observation'] ?? '',
+        'p_recommendation'     => $data['recommendation'] ?? '',
+        'p_statut'             => $data['statut'] ?? 'non affecté',
         'p_geom_json'          => $geomString,
     ]);
 
