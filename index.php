@@ -1183,9 +1183,9 @@ $user = getCurrentUser();
                         <div style="margin-bottom:10px;">
                             <label style="display:block; font-size:0.75rem; font-weight:600;
                                 color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
-                                Prénom & Nom
+                                Liste attributaire
                             </label>
-                            <input type="text" id="new_prenom_nom" placeholder="Attributaire" style="
+                            <input type="text" id="new_liste_attributaire" placeholder="Liste attributaire" style="
                                 width:100%; padding:7px 10px;
                                 border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
                         </div>
@@ -1193,9 +1193,19 @@ $user = getCurrentUser();
                         <div style="margin-bottom:10px;">
                             <label style="display:block; font-size:0.75rem; font-weight:600;
                                 color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
-                                Adresse
+                                Attributaire 2026
                             </label>
-                            <input type="text" id="new_adresse" placeholder="Adresse" style="
+                            <input type="text" id="new_attribution_2026" placeholder="Adresse de la parcelle" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px; font-size:0.85rem;"> 
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                Prénom & Nom
+                            </label>
+                            <input type="text" id="new_prenom_nom" placeholder="Attributaire" style="
                                 width:100%; padding:7px 10px;
                                 border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
                         </div>
@@ -1204,18 +1214,19 @@ $user = getCurrentUser();
                             <div>
                                 <label style="display:block; font-size:0.75rem; font-weight:600;
                                     color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
-                                    Téléphone
-                                </label>
-                                <input type="text" id="new_tel" placeholder="77 000 00 00" style="
-                                    width:100%; padding:7px 10px;
-                                    border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
-                            </div>
-                            <div>
-                                <label style="display:block; font-size:0.75rem; font-weight:600;
-                                    color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
                                     CNI
                                 </label>
                                 <input type="text" id="new_cni" placeholder="N° CNI" style="
+                                    width:100%; padding:7px 10px;
+                                    border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
+                            </div>
+
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:600;
+                                    color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                    Téléphone
+                                </label>
+                                <input type="text" id="new_tel" placeholder="77 000 00 00" style="
                                     width:100%; padding:7px 10px;
                                     border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
                             </div>
@@ -1238,12 +1249,32 @@ $user = getCurrentUser();
                         <div style="margin-bottom:10px;">
                             <label style="display:block; font-size:0.75rem; font-weight:600;
                                 color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                Recensement
+                            </label>
+                            <input type="text" id="new_recensement" placeholder="Attributaire" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
                                 Observation
                             </label>
                             <textarea id="new_observation" rows="2" placeholder="Observation..." style="
                                 width:100%; padding:7px 10px;
                                 border:1px solid var(--border); border-radius:6px;
                                 font-family:'Outfit',sans-serif; font-size:0.85rem; resize:vertical;"></textarea>
+                        </div>
+
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                Recommendation
+                            </label>
+                            <input type="text" id="new_recommendation" placeholder="Attributaire" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
                         </div>
 
                         <!-- Indicateur dessin -->
