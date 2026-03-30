@@ -1063,74 +1063,56 @@ function onMapDrawDblClick(e) {
 
 async function saveNewParcelle() {
 
-    if (!drawPolygon || !drawnPoints || drawnPoints.length < 3) {
+    if (!drawPolygon && drawnPoints.length < 3) {
         alert('Vous devez d\'abord dessiner la parcelle sur la carte.');
         return;
     }
 
-    // Lecture sécurisée avec ?. pour éviter null
-    const n_parcelle = document.getElementById('new_n_parcelle')?.value?.trim() || '';
-
+    const n_parcelle = document.getElementById('new_n_parcelle').value.trim();
     if (!n_parcelle) {
         alert('Le numéro de parcelle est obligatoire.');
+        document.getElementById('new_n_parcelle').focus();
         return;
     }
 
-    // GeoJSON de la géométrie
+    // Construire le GeoJSON de la géométrie
     const geomJson = JSON.stringify({
         type: 'Polygon',
         coordinates: [drawnPoints]
     });
 
-    // Fonction helper pour lire un champ en toute sécurité
-    const val = (id) => document.getElementById(id)?.value || null;
     const payload = {
-        n_parcelle:          n_parcelle,
-        liste_attributaire:  val('new_liste_attributaire'),
-        attribution_2026:    val('new_attribution_2026'),
-        prenom_nom:          val('new_prenom_nom'),
-        cni:                 val('new_cni'),
-        tel:                 val('new_tel'),
-        recensement:         val('new_recensement'),
-        observation:         val('new_observation'),
-        recommendation:      val('new_recommendation'),
-        statut:              val('new_statut') || 'non affecté',
-        geom:                geomJson
+        n_parcelle:     n_parcelle,
+        prenom_nom:     document.getElementById('new_prenom_nom').value,
+        adresse:        document.getElementById('new_adresse').value,
+        tel:            document.getElementById('new_tel').value,
+        cni:            document.getElementById('new_cni').value,
+        statut:         document.getElementById('new_statut').value,
+        observation:    document.getElementById('new_observation').value,
+        geom:           geomJson
     };
-
-    console.log('Payload:', JSON.stringify(payload));
 
     try {
         showLoadingMessage('Enregistrement...');
-
-        const res = await fetch(API_URL + 'add_parcelle.php', {
+        const res    = await fetch(API_URL + 'add_parcelle.php', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify(payload)
         });
-
-        // Vérifier que c'est du JSON
-        const contentType = res.headers.get('content-type') || '';
-        if (!contentType.includes('application/json')) {
-            const text = await res.text();
-            throw new Error('Réponse non-JSON du serveur:\n' + text.substring(0, 400));
-        }
-
         const result = await res.json();
         hideLoadingMessage();
 
         if (result.success) {
             alert(`✅ ${result.message}`);
             cancelAddParcelle();
-            await loadParcelles();
+            await loadParcelles(); // recharger la carte
             updateStatistics();
         } else {
-            alert('❌ Erreur : ' + (result.error || 'Erreur inconnue'));
+            alert('❌ Erreur : ' + result.error);
         }
-
     } catch (err) {
         hideLoadingMessage();
-        alert('❌ ' + err.message);
+        alert('❌ Erreur réseau : ' + err.message);
     }
 }
 
