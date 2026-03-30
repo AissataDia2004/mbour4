@@ -1098,6 +1098,15 @@ async function saveNewParcelle() {
         geom:                geomJson
     };
 
+    console.log(document.getElementById('new_liste_attributaire'));
+console.log(document.getElementById('new_attribution_2026'));
+console.log(document.getElementById('new_prenom_nom'));
+console.log(document.getElementById('new_cni'));
+console.log(document.getElementById('new_tel'));
+console.log(document.getElementById('new_recensement'));
+console.log(document.getElementById('new_observation'));
+console.log(document.getElementById('new_recommendation'));
+console.log(document.getElementById('new_statut'));
     console.log('Payload:', JSON.stringify(payload));
 
     try {
