@@ -1173,16 +1173,6 @@ $user = getCurrentUser();
                         <div style="margin-bottom:10px;">
                             <label style="display:block; font-size:0.75rem; font-weight:600;
                                 color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
-                                N° Parcelle *
-                            </label>
-                            <input type="text" id="new_n_parcelle" placeholder="ex: P-2026-001" style="
-                                width:100%; padding:7px 10px;
-                                border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
-                        </div>
-
-                        <div style="margin-bottom:10px;">
-                            <label style="display:block; font-size:0.75rem; font-weight:600;
-                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
                                 Liste attributaire
                             </label>
                             <input type="text" id="new_liste_attributaire" placeholder="Liste attributaire" style="
@@ -1198,6 +1188,16 @@ $user = getCurrentUser();
                             <input type="text" id="new_attribution_2026" placeholder="Adresse de la parcelle" style="
                                 width:100%; padding:7px 10px;
                                 border:1px solid var(--border); border-radius:6px; font-size:0.85rem;"> 
+                        </div>
+
+                         <div style="margin-bottom:10px;">
+                            <label style="display:block; font-size:0.75rem; font-weight:600;
+                                color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em;">
+                                N° Parcelle *
+                            </label>
+                            <input type="text" id="new_n_parcelle" placeholder="ex: P-2026-001" style="
+                                width:100%; padding:7px 10px;
+                                border:1px solid var(--border); border-radius:6px; font-size:0.85rem;">
                         </div>
 
                         <div style="margin-bottom:10px;">
