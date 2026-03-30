@@ -1063,7 +1063,7 @@ function onMapDrawDblClick(e) {
 
 async function saveNewParcelle() {
 
-    if (!drawPolygon && drawnPoints.length < 3) {
+    if (!drawPolygon || !drawnPoints || drawnPoints.length < 3) {
         alert('Vous devez d\'abord dessiner la parcelle sur la carte.');
         return;
     }
@@ -1084,7 +1084,6 @@ async function saveNewParcelle() {
 
     // Fonction helper pour lire un champ en toute sécurité
     const val = (id) => document.getElementById(id)?.value || null;
-
     const payload = {
         n_parcelle:          n_parcelle,
         liste_attributaire:  val('new_liste_attributaire'),
