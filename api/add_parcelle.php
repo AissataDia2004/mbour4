@@ -1,16 +1,19 @@
 <?php
-ini_set('display_errors', 1);
+ob_start(); // ← capture tout output parasite
+ini_set('display_errors', 0);
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
 
 try {
     require_once __DIR__ . '/../config_supabase.php';
 
+    // vider le buffer avant d'envoyer le JSON
+    ob_clean();
+
     if (!defined('SUPABASE_URL') || !defined('SUPABASE_ANON_KEY')) {
         throw new Exception('Configuration Supabase manquante');
     }
 
-    // Lire les données POST
     $raw  = file_get_contents('php://input');
     $data = json_decode($raw, true);
 
@@ -53,7 +56,6 @@ try {
             $geomDecoded = $geomRaw;
         }
 
-        // Convertir Polygon → MultiPolygon pour correspondre au type de la colonne
         if ($geomDecoded && $geomDecoded['type'] === 'Polygon') {
             $geomObj = [
                 'type'        => 'MultiPolygon',
@@ -66,20 +68,19 @@ try {
 
     // ── 3. Construire le payload ─────────────────────────────
     $payload = [
-        'id'          => $newId,
-        'n_parcelle'  => $data['n_parcelle']  ?? null,
+        'id'                 => $newId,
+        'n_parcelle'         => $data['n_parcelle']         ?? null,
         'liste_attributaire' => $data['liste_attributaire'] ?? null,
-        'attribution_2026' => $data['attribution_2026'] ?? null,
-        'prenom_nom'  => $data['prenom_nom']   ?? null,
-        'cni'         => $data['cni']           ?? null,
-        'tel'         => $data['tel']           ?? null,
-        'recensement' => $data['recensement']   ?? null,
-        'observation' => $data['observation']   ?? null,
-        'recommendation' => $data['recommendation'] ?? null,
-        'statut'      => $data['statut']        ?? 'non affecté',
+        'attribution_2026'   => $data['attribution_2026']   ?? null,
+        'prenom_nom'         => $data['prenom_nom']         ?? null,
+        'cni'                => $data['cni']                ?? null,
+        'tel'                => $data['tel']                ?? null,
+        'recensement'        => $data['recensement']        ?? null,
+        'observation'        => $data['observation']        ?? null,
+        'recommendation'     => $data['recommendation']     ?? null,
+        'statut'             => $data['statut']             ?? 'non affecté',
     ];
 
-    // Ajouter la géométrie seulement si valide
     if ($geomObj) {
         $payload['geom'] = $geomObj;
     }
@@ -106,7 +107,7 @@ try {
 
     if ($curlErr2) throw new Exception('cURL error (insert): ' . $curlErr2);
 
-    // Supabase retourne 201 pour un insert réussi
+    ob_clean(); // ← vider encore avant le JSON final
     if ($httpCode2 === 201 || $httpCode2 === 200) {
         echo json_encode([
             'success' => true,
@@ -114,13 +115,13 @@ try {
             'message' => "Parcelle #$newId créée avec succès"
         ]);
     } else {
-        // Décoder l'erreur Supabase
         $errBody = json_decode($resp2, true);
         $errMsg  = $errBody['message'] ?? $errBody['error'] ?? $resp2;
         throw new Exception("Supabase insert HTTP $httpCode2 : $errMsg");
     }
 
 } catch (Exception $e) {
+    ob_clean(); // ← vider avant l'erreur JSON
     http_response_code(500);
     echo json_encode([
         'success' => false,
