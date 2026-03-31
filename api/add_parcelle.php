@@ -43,16 +43,24 @@ try {
     $newId = $maxId + 1;
 
     // ── 2. Préparer la géométrie ─────────────────────────────
-    // Le JS envoie geom comme string JSON → on décode pour l'envoyer comme objet
     $geomRaw = $data['geom'] ?? null;
     $geomObj = null;
 
     if ($geomRaw) {
-        // Si c'est une string JSON, on décode
         if (is_string($geomRaw)) {
-            $geomObj = json_decode($geomRaw, true);
+            $geomDecoded = json_decode($geomRaw, true);
         } else {
-            $geomObj = $geomRaw;
+            $geomDecoded = $geomRaw;
+        }
+
+        // Convertir Polygon → MultiPolygon pour correspondre au type de la colonne
+        if ($geomDecoded && $geomDecoded['type'] === 'Polygon') {
+            $geomObj = [
+                'type'        => 'MultiPolygon',
+                'coordinates' => [$geomDecoded['coordinates']]
+            ];
+        } else {
+            $geomObj = $geomDecoded;
         }
     }
 
