@@ -1083,12 +1083,15 @@ async function saveNewParcelle() {
 
     const payload = {
         n_parcelle:     n_parcelle,
+        liste_attributaire: document.getElementById('new_liste_attributaire').value,
+        attribution_2026: document.getElementById('new_attribution_2026').value,
         prenom_nom:     document.getElementById('new_prenom_nom').value,
-        adresse:        document.getElementById('new_adresse').value,
-        tel:            document.getElementById('new_tel').value,
         cni:            document.getElementById('new_cni').value,
-        statut:         document.getElementById('new_statut').value,
+        tel:            document.getElementById('new_tel').value,
+        recensement:     document.getElementById('new_recensement').value,
         observation:    document.getElementById('new_observation').value,
+        recommendation: document.getElementById('new_recommendation').value,
+        statut:         document.getElementById('new_statut').value,
         geom:           geomJson
     };
 

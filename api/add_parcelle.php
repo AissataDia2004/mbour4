@@ -60,12 +60,15 @@ try {
     $payload = [
         'id'          => $newId,
         'n_parcelle'  => $data['n_parcelle']  ?? null,
+        'liste_attributaire' => $data['liste_attributaire'] ?? null,
+        'attribution_2026' => $data['attribution_2026'] ?? null,
         'prenom_nom'  => $data['prenom_nom']   ?? null,
-        'adresse'     => $data['adresse']       ?? null,
-        'tel'         => $data['tel']           ?? null,
         'cni'         => $data['cni']           ?? null,
-        'statut'      => $data['statut']        ?? 'non affecté',
+        'tel'         => $data['tel']           ?? null,
+        'recensement' => $data['recensement']   ?? null,
         'observation' => $data['observation']   ?? null,
+        'recommendation' => $data['recommendation'] ?? null,
+        'statut'      => $data['statut']        ?? 'non affecté',
     ];
 
     // Ajouter la géométrie seulement si valide
