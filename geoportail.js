@@ -225,7 +225,6 @@ function bindParcelPopup(feature, layer) {
 }
 
 // Afficher le formulaire d'édition dans le panneau latéral
-// Afficher le formulaire d'édition dans le panneau latéral
 function displayParcelInfo(props) {
     const infoDiv = document.getElementById('parcelInfo');
     if (!infoDiv) return;

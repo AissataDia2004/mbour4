@@ -80,18 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== HEADER OFFICIEL ===== */
-        .official-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
+        .official-header { text-align: center; margin-bottom: 2.5rem; }
 
         .flag-bar {
-            display: flex;
-            height: 6px;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 1.8rem;
+            display: flex; height: 6px; border-radius: 3px;
+            overflow: hidden; margin-bottom: 1.8rem;
             box-shadow: 0 2px 12px rgba(0,0,0,0.4);
         }
         .flag-bar .f1 { flex: 1; background: var(--vert); }
@@ -99,372 +92,190 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .flag-bar .f3 { flex: 1; background: var(--rouge); }
 
         .republic-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            display: inline-flex; align-items: center;
+            gap: 1rem; margin-bottom: 1rem;
         }
 
-        .emblem-wrap {
-            position: relative;
-            width: 72px;
-            height: 48px;
-        }
-
+        .emblem-wrap { position: relative; width: 72px; height: 48px; }
         .emblem-ring {
-            width: 72px; height: 48px;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            width: 72px; height: 48px; border-radius: 6px;
+            overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
 
-        .emblem-inner { display: none; }
-
-        .republic-text {
-            text-align: left;
-        }
-
+        .republic-text { text-align: left; }
         .republic-text .line1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.75rem;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            color: var(--muted);
-            display: block;
+            font-family: 'Cormorant Garamond', serif; font-size: 0.75rem;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: var(--muted); display: block;
         }
-
         .republic-text .line2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.9rem;
-            font-weight: 700;
-            color: var(--text);
-            line-height: 1.1;
-            display: block;
+            font-family: 'Cormorant Garamond', serif; font-size: 1.9rem;
+            font-weight: 700; color: var(--text); line-height: 1.1; display: block;
         }
-
         .republic-text .line3 {
-            font-size: 0.72rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--jaune);
-            display: block;
-            margin-top: 2px;
+            font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--jaune); display: block; margin-top: 2px;
         }
 
         .device-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            gap: 1.5rem; margin-bottom: 0.5rem;
         }
-
         .device-line {
-            flex: 1;
-            max-width: 120px;
-            height: 1px;
+            flex: 1; max-width: 120px; height: 1px;
             background: linear-gradient(90deg, transparent, var(--or), transparent);
         }
-
         .device-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.85rem;
-            letter-spacing: 0.35em;
-            text-transform: uppercase;
-            color: var(--or);
+            font-family: 'Cormorant Garamond', serif; font-size: 0.85rem;
+            letter-spacing: 0.35em; text-transform: uppercase; color: var(--or);
         }
-
         .subtitle-block {
-            font-size: 0.8rem;
-            color: var(--muted);
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
+            font-size: 0.8rem; color: var(--muted);
+            letter-spacing: 0.12em; text-transform: uppercase;
         }
 
-        /* ===== LAYOUT PRINCIPAL ===== */
         .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            overflow: hidden;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 20px; overflow: hidden;
             box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.1);
         }
 
-        /* ===== PANNEAU GAUCHE (INFO) ===== */
         .left-panel {
             background: linear-gradient(160deg, var(--vert-dk) 0%, var(--dark) 100%);
-            padding: 3rem 2.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            overflow: hidden;
+            padding: 3rem 2.5rem; display: flex; flex-direction: column;
+            justify-content: space-between; position: relative; overflow: hidden;
         }
-
         .left-panel::before {
-            content: '';
-            position: absolute;
-            top: -80px; right: -80px;
-            width: 250px; height: 250px;
-            border-radius: 50%;
-            border: 40px solid rgba(245,197,24,0.06);
-            pointer-events: none;
+            content: ''; position: absolute; top: -80px; right: -80px;
+            width: 250px; height: 250px; border-radius: 50%;
+            border: 40px solid rgba(245,197,24,0.06); pointer-events: none;
         }
-
         .left-panel::after {
-            content: '';
-            position: absolute;
-            bottom: -60px; left: -60px;
-            width: 200px; height: 200px;
-            border-radius: 50%;
-            border: 30px solid rgba(26,122,60,0.15);
-            pointer-events: none;
+            content: ''; position: absolute; bottom: -60px; left: -60px;
+            width: 200px; height: 200px; border-radius: 50%;
+            border: 30px solid rgba(26,122,60,0.15); pointer-events: none;
         }
 
-        .portal-title {
-            position: relative;
-            z-index: 1;
-        }
-
+        .portal-title { position: relative; z-index: 1; }
         .portal-label {
-            display: inline-block;
-            font-size: 0.68rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--jaune);
-            background: rgba(245,197,24,0.1);
-            border: 1px solid rgba(245,197,24,0.25);
-            border-radius: 20px;
-            padding: 0.3rem 0.8rem;
-            margin-bottom: 1.2rem;
+            display: inline-block; font-size: 0.68rem; letter-spacing: 0.3em;
+            text-transform: uppercase; color: var(--jaune);
+            background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.25);
+            border-radius: 20px; padding: 0.3rem 0.8rem; margin-bottom: 1.2rem;
         }
-
         .portal-name {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: white;
-            line-height: 1.05;
-            margin-bottom: 0.8rem;
+            font-family: 'Cormorant Garamond', serif; font-size: 2.8rem;
+            font-weight: 700; color: white; line-height: 1.05; margin-bottom: 0.8rem;
         }
+        .portal-name span { color: var(--jaune); }
+        .portal-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
 
-        .portal-name span {
-            color: var(--jaune);
-        }
-
-        .portal-desc {
-            font-size: 0.88rem;
-            color: var(--muted);
-            line-height: 1.7;
-        }
-
-        .services-list {
-            position: relative;
-            z-index: 1;
-            margin-top: 2rem;
-        }
-
+        .services-list { position: relative; z-index: 1; margin-top: 2rem; }
         .services-list h4 {
-            font-size: 0.7rem;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.35);
-            margin-bottom: 1rem;
+            font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+            color: rgba(255,255,255,0.35); margin-bottom: 1rem;
         }
-
         .service-chip {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 10px;
-            margin-bottom: 0.6rem;
-            transition: all 0.3s;
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem 1rem; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+            margin-bottom: 0.6rem; transition: all 0.3s;
         }
-
         .service-chip:hover {
-            background: rgba(26,122,60,0.2);
-            border-color: rgba(26,122,60,0.4);
+            background: rgba(26,122,60,0.2); border-color: rgba(26,122,60,0.4);
             transform: translateX(4px);
         }
-
         .chip-icon {
-            width: 36px; height: 36px;
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem;
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
         }
         .chip-icon.green { background: rgba(26,122,60,0.3); }
         .chip-icon.gold  { background: rgba(212,175,55,0.2); }
         .chip-icon.red   { background: rgba(200,16,46,0.2); }
+        .chip-icon.blue  { background: rgba(59,130,246,0.2); }
+        .chip-icon.purple{ background: rgba(139,92,246,0.2); }
 
-        .chip-text strong {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text);
-            font-weight: 500;
-        }
-        .chip-text span {
-            font-size: 0.72rem;
-            color: var(--muted);
-        }
+        .chip-text strong { display: block; font-size: 0.85rem; color: var(--text); font-weight: 500; }
+        .chip-text span   { font-size: 0.72rem; color: var(--muted); }
 
         .left-footer {
-            position: relative;
-            z-index: 1;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.06);
+            position: relative; z-index: 1; margin-top: 2rem;
+            padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06);
         }
+        .left-footer p { font-size: 0.72rem; color: rgba(255,255,255,0.2); letter-spacing: 0.08em; }
 
-        .left-footer p {
-            font-size: 0.72rem;
-            color: rgba(255,255,255,0.2);
-            letter-spacing: 0.08em;
-        }
-
-        /* ===== PANNEAU DROIT (LOGIN) ===== */
         .right-panel {
-            padding: 3rem 2.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 3rem 2.5rem; display: flex;
+            flex-direction: column; justify-content: center;
         }
-
-        .login-heading {
-            margin-bottom: 2rem;
-        }
-
+        .login-heading { margin-bottom: 2rem; }
         .login-heading h2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2rem;
-            color: var(--text);
-            font-weight: 600;
-            margin-bottom: 0.3rem;
+            font-family: 'Cormorant Garamond', serif; font-size: 2rem;
+            color: var(--text); font-weight: 600; margin-bottom: 0.3rem;
         }
-
-        .login-heading p {
-            font-size: 0.85rem;
-            color: var(--muted);
-        }
+        .login-heading p { font-size: 0.85rem; color: var(--muted); }
 
         .error-msg {
-            background: rgba(224,82,82,0.1);
-            border: 1px solid rgba(224,82,82,0.3);
-            color: #f08080;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            font-size: 0.85rem;
-            margin-bottom: 1.25rem;
+            background: rgba(224,82,82,0.1); border: 1px solid rgba(224,82,82,0.3);
+            color: #f08080; border-radius: 8px; padding: 0.75rem 1rem;
+            font-size: 0.85rem; margin-bottom: 1.25rem;
             display: flex; align-items: center; gap: 0.5rem;
         }
 
-        .field {
-            margin-bottom: 1.25rem;
-        }
-
+        .field { margin-bottom: 1.25rem; }
         .field label {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 0.6rem;
+            display: block; font-size: 0.7rem; font-weight: 600;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--muted); margin-bottom: 0.6rem;
         }
-
-        .field-wrap {
-            position: relative;
-        }
-
+        .field-wrap { position: relative; }
         .field-wrap .icon {
-            position: absolute;
-            left: 1rem; top: 50%;
-            transform: translateY(-50%);
-            font-size: 1rem;
-            opacity: 0.5;
+            position: absolute; left: 1rem; top: 50%;
+            transform: translateY(-50%); font-size: 1rem; opacity: 0.5;
         }
-
         .field input {
-            width: 100%;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 0.85rem 1rem 0.85rem 2.8rem;
-            color: var(--text);
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.25s;
+            width: 100%; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            padding: 0.85rem 1rem 0.85rem 2.8rem; color: var(--text);
+            font-family: 'Outfit', sans-serif; font-size: 0.95rem;
+            outline: none; transition: all 0.25s;
         }
-
         .field input:focus {
-            border-color: var(--vert);
-            background: rgba(26,122,60,0.06);
+            border-color: var(--vert); background: rgba(26,122,60,0.06);
             box-shadow: 0 0 0 3px rgba(26,122,60,0.12);
         }
-
         .field input::placeholder { color: rgba(255,255,255,0.18); }
 
         .btn-login {
-            width: 100%;
-            padding: 0.95rem;
+            width: 100%; padding: 0.95rem;
             background: linear-gradient(135deg, var(--vert) 0%, #22a050 100%);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-family: 'Outfit', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            margin-top: 0.75rem;
-            transition: all 0.2s;
+            border: none; border-radius: 10px; color: #fff;
+            font-family: 'Outfit', sans-serif; font-size: 1rem;
+            font-weight: 600; letter-spacing: 0.08em; cursor: pointer;
+            margin-top: 0.75rem; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 0.5rem;
             box-shadow: 0 8px 24px rgba(26,122,60,0.35);
         }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(26,122,60,0.45);
-        }
-
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(26,122,60,0.45); }
         .btn-login:active { transform: translateY(0); }
 
         .divider {
-            display: flex; align-items: center; gap: 1rem;
-            margin: 1.75rem 0 1.25rem;
+            display: flex; align-items: center; gap: 1rem; margin: 1.75rem 0 1.25rem;
         }
         .divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
         .divider span { font-size: 0.72rem; color: rgba(255,255,255,0.2); letter-spacing: 0.12em; text-transform: uppercase; }
 
         .info-box {
-            background: rgba(245,197,24,0.06);
-            border: 1px solid rgba(245,197,24,0.2);
-            border-radius: 10px;
-            padding: 1rem 1.2rem;
+            background: rgba(245,197,24,0.06); border: 1px solid rgba(245,197,24,0.2);
+            border-radius: 10px; padding: 1rem 1.2rem;
         }
+        .info-box p { font-size: 0.78rem; color: rgba(245,197,24,0.7); line-height: 1.6; }
+        .info-box strong { color: var(--jaune); }
 
-        .info-box p {
-            font-size: 0.78rem;
-            color: rgba(245,197,24,0.7);
-            line-height: 1.6;
-        }
-
-        .info-box strong {
-            color: var(--jaune);
-        }
-
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 680px) {
             .main-layout { grid-template-columns: 1fr; }
-            .left-panel { padding: 2rem 1.5rem; }
-            .right-panel { padding: 2rem 1.5rem; }
+            .left-panel, .right-panel { padding: 2rem 1.5rem; }
             .portal-name { font-size: 2rem; }
         }
     </style>
@@ -473,14 +284,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="wrapper">
 
-    <!-- En-tête officielle -->
     <div class="official-header">
         <div class="flag-bar">
-            <div class="f1"></div>
-            <div class="f2"></div>
-            <div class="f3"></div>
+            <div class="f1"></div><div class="f2"></div><div class="f3"></div>
         </div>
-
         <div class="republic-badge">
             <div class="emblem-wrap">
                 <div class="emblem-ring">
@@ -498,7 +305,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span class="line3">Un Peuple · Un But · Une Foi</span>
             </div>
         </div>
-
         <div class="device-row">
             <div class="device-line"></div>
             <div class="device-text">Système d'information géographique</div>
@@ -507,7 +313,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="subtitle-block">Ministère de l'Urbanisme, du Logement et de l'Hygiène Publique</p>
     </div>
 
-    <!-- Card principale -->
     <div class="main-layout">
 
         <!-- Panneau gauche -->
@@ -541,6 +346,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span>Identification & enregistrement</span>
                     </div>
                 </div>
+                <div class="service-chip">
+                    <div class="chip-icon blue"></div>
+                    <div class="chip-text">
+                        <strong>Gouverneur</strong>
+                        <span>Supervision territoriale</span>
+                    </div>
+                </div>
+                <div class="service-chip">
+                    <div class="chip-icon purple"></div>
+                    <div class="chip-text">
+                        <strong>DGIA</strong>
+                        <span>Direction Générale de l'Urbanisme et de l'Architecture</span>
+                    </div>
+                </div>
             </div>
 
             <div class="left-footer">
@@ -549,16 +368,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- Panneau droit (formulaire) -->
+        <!-- Panneau droit -->
         <div class="right-panel">
             <div class="login-heading">
                 <h2>Connexion</h2>
                 <p>Accédez à votre espace sécurisé</p>
             </div>
 
-            <!-- Erreur PHP: <?php if ($error): ?> -->
-            <!-- <div class="error-msg">⚠️ <?= htmlspecialchars($error) ?></div> -->
-            <!-- <?php endif; ?> -->
+            <?php if ($error): ?>
+            <div class="error-msg">⚠️ <?= htmlspecialchars($error) ?></div>
+            <?php endif; ?>
 
             <form method="POST" autocomplete="off">
                 <div class="field">
@@ -566,11 +385,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="field-wrap">
                         <span class="icon">👤</span>
                         <input type="text" name="username"
-                               placeholder="urbanisme / domaine / cadastre"
+                               placeholder="urbanisme / cadastre / gouverneur..."
                                autofocus required>
                     </div>
                 </div>
-
                 <div class="field">
                     <label>Mot de passe</label>
                     <div class="field-wrap">
@@ -579,7 +397,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                placeholder="••••••••••" required>
                     </div>
                 </div>
-
                 <button type="submit" class="btn-login">
                     Se connecter →
                 </button>
@@ -597,7 +414,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
     </div>
-
 </div>
 </body>
 </html>
