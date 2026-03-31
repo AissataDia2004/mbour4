@@ -1075,24 +1075,29 @@ async function saveNewParcelle() {
         return;
     }
 
-    // Construire le GeoJSON de la géométrie
     const geomJson = JSON.stringify({
         type: 'Polygon',
         coordinates: [drawnPoints]
     });
 
+    // Fonction helper pour éviter les erreurs null
+    function val(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : '';
+    }
+
     const payload = {
-        n_parcelle:     n_parcelle,
-        liste_attributaire: document.getElementById('new_liste_attributaire').value,
-        attribution_2026: document.getElementById('new_attribution_2026').value,
-        prenom_nom:     document.getElementById('new_prenom_nom').value,
-        cni:            document.getElementById('new_cni').value,
-        tel:            document.getElementById('new_tel').value,
-        recensement:     document.getElementById('new_recensement').value,
-        observation:    document.getElementById('new_observation').value,
-        recommendation: document.getElementById('new_recommendation').value,
-        statut:         document.getElementById('new_statut').value,
-        geom:           geomJson
+        n_parcelle:          val('new_n_parcelle'),
+        liste_attributaire:  val('new_liste_attributaire'),
+        attribution_2026:    val('new_attribution_2026'),
+        prenom_nom:          val('new_prenom_nom'),
+        cni:                 val('new_cni'),
+        tel:                 val('new_tel'),
+        recensement:         val('new_recensement'),
+        observation:         val('new_observation'),
+        recommendation:      val('new_recommendation'),
+        statut:              val('new_statut'),
+        geom:                geomJson
     };
 
     try {
@@ -1108,7 +1113,7 @@ async function saveNewParcelle() {
         if (result.success) {
             alert(`✅ ${result.message}`);
             cancelAddParcelle();
-            await loadParcelles(); // recharger la carte
+            await loadParcelles();
             updateStatistics();
         } else {
             alert('❌ Erreur : ' + result.error);
