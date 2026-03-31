@@ -1062,6 +1062,14 @@ function onMapDrawDblClick(e) {
 }
 
 async function saveNewParcelle() {
+     // DEBUG
+    const ids = ['new_n_parcelle','new_liste_attributaire','new_attribution_2026',
+                 'new_prenom_nom','new_cni','new_tel','new_recensement',
+                 'new_observation','new_recommendation','new_statut'];
+    ids.forEach(id => {
+        console.log(id, '->', document.getElementById(id) ? '✅' : '❌ NULL');
+    });
+    // FIN DEBUG
 
     if (!drawPolygon && drawnPoints.length < 3) {
         alert('Vous devez d\'abord dessiner la parcelle sur la carte.');
