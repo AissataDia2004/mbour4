@@ -2,6 +2,7 @@
 require_once 'config/auth.php';
 requireLogin();
 $user = getCurrentUser();
+$peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -11,6 +12,10 @@ $user = getCurrentUser();
     <title>Géoportail — Direction de l'Urbanisme de Thiès</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script>
+    const USER_ROLE = '<?= htmlspecialchars($_SESSION['role']) ?>';
+    const CAN_EDIT  = <?= $peutEditer ? 'true' : 'false' ?>;
+    </script>
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -965,7 +970,8 @@ $user = getCurrentUser();
                     <input type="text" id="searchInput" placeholder="Rechercher une parcelle, un numéro...">
                     <button onclick="searchMap()">🔍</button>
                 </div>
-                <!-- Bouton ajouter parcelle -->
+                <!-- Bouton ajouter parcelle — visible seulement pour éditeurs -->
+                <?php if ($peutEditer): ?>
                 <button id="btnAddParcelle" onclick="startDrawParcelle()" style="
                     padding: 0.5rem 1rem;
                     background: var(--vert);
@@ -984,6 +990,7 @@ $user = getCurrentUser();
                 ">
                     ＋ Ajouter parcelle
                 </button>
+                <?php endif; ?>
                 <div class="filter-tabs">
                     <button id="btn-parcelles" class="filter-tab active" onclick="toggleLayer('parcelles')">
                 Parcelles

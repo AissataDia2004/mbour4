@@ -230,6 +230,23 @@ function displayParcelInfo(props) {
     const infoDiv = document.getElementById('parcelInfo');
     if (!infoDiv) return;
 
+    // Visiteur : affichage lecture seule uniquement
+    if (!CAN_EDIT) {
+        let html = '<div style="font-size:0.85rem;">';
+        for (let key in props) {
+            if (props.hasOwnProperty(key) && key !== 'geom') {
+                const label = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
+                html += `<div style="padding:6px 0; border-bottom:1px solid #f0f4f0;">
+                    <span style="color:#6b7280; font-size:0.75rem;">${label}</span><br>
+                    <strong>${props[key] || 'N/A'}</strong>
+                </div>`;
+            }
+        }
+        html += '</div>';
+        infoDiv.innerHTML = html;
+        return; // ← stop ici, pas de formulaire d'édition
+    }
+
     const editableFields = ['liste_attributaire', 'attribution_2026', 'prenom_nom', 'n_parcelle', 'cni', 'tel', 'recensement', 'observation', 'recommendation', 'statut'];
 
     let html = '<div class="edit-form">';

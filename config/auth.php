@@ -13,7 +13,6 @@ function isLoggedIn(): bool {
 
 function requireLogin(): void {
     if (!isLoggedIn()) {
-        // Nettoyer la session expirée
         session_unset();
         session_destroy();
         header('Location: login.php');
@@ -30,4 +29,10 @@ function getCurrentUser(): array {
         'nom'      => $_SESSION['nom']   ?? '',
         'icon'     => $_SESSION['icon']  ?? '',
     ];
+}
+
+// Retourne true si l'utilisateur peut modifier/ajouter/supprimer
+function canEdit(): bool {
+    $role = $_SESSION['role'] ?? '';
+    return in_array($role, ['editeur']);
 }

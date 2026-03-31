@@ -1,30 +1,36 @@
 <?php
 // config/users_config.php
-// Configuration des utilisateurs du géoportail
-
 define('USERS', [
-    // Urbanisme
     'urbanisme' => [
         'password' => password_hash('urbanisme2026', PASSWORD_DEFAULT),
-        'role'     => 'urbanisme',
+        'role'     => 'editeur',
         'nom'      => 'Service Urbanisme',
         'icon'     => ''
     ],
-    // Domaine
+    'cadastre' => [
+        'password' => password_hash('cadastre2026', PASSWORD_DEFAULT),
+        'role'     => 'editeur',
+        'nom'      => 'Service Cadastre',
+        'icon'     => ''
+    ],
     'domaine' => [
         'password' => password_hash('domaine2026', PASSWORD_DEFAULT),
-        'role'     => 'domaine',
+        'role'     => 'visiteur',
         'nom'      => 'Service Domaine',
         'icon'     => ''
     ],
-    // Cadastre
-    'cadastre' => [
-        'password' => password_hash('cadastre2026', PASSWORD_DEFAULT),
-        'role'     => 'cadastre',
-        'nom'      => 'Service Cadastre',
+    'gouverneur' => [
+        'password' => password_hash('gouverneur2026', PASSWORD_DEFAULT),
+        'role'     => 'visiteur',
+        'nom'      => 'Gouverneur',
+        'icon'     => ''
+    ],
+    'dgua' => [
+        'password' => password_hash('dgua2026', PASSWORD_DEFAULT),
+        'role'     => 'visiteur',
+        'nom'      => 'DGUA',
         'icon'     => ''
     ],
 ]);
 
-// Durée de session en secondes (8 heures)
 define('SESSION_DURATION', 28800);
