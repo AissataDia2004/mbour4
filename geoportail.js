@@ -225,11 +225,12 @@ function bindParcelPopup(feature, layer) {
 }
 
 // Afficher le formulaire d'édition dans le panneau latéral
+// Afficher le formulaire d'édition dans le panneau latéral
 function displayParcelInfo(props) {
     const infoDiv = document.getElementById('parcelInfo');
     if (!infoDiv) return;
 
-    const editableFields = ['liste_attributaire', 'adresse', 'attribution_2026', 'prenom_nom', 'n_parcelle', 'cni', 'tel', 'recensement', 'observation', 'recommendation', 'statut'];
+    const editableFields = ['liste_attributaire', 'attribution_2026', 'prenom_nom', 'n_parcelle', 'cni', 'tel', 'recensement', 'observation', 'recommendation', 'statut'];
 
     let html = '<div class="edit-form">';
     html += '<form id="editParcelForm" onsubmit="updateParcel(event)">';
@@ -267,10 +268,50 @@ function displayParcelInfo(props) {
                 ❌ Annuler
             </button>
         </div>
+        <div style="margin-top:10px;">
+            <button type="button" onclick="deleteParcelle(${props.id || props.gid})"
+                style="width:100%; padding:10px; background:#dc2626; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">
+                🗑️ Supprimer cette parcelle
+            </button>
+        </div>
     `;
 
     html += '</form></div>';
     infoDiv.innerHTML = html;
+}
+
+// Supprimer une parcelle
+async function deleteParcelle(id) {
+    if (!id) {
+        alert('ID de parcelle introuvable.');
+        return;
+    }
+
+    const confirmed = confirm(`⚠️ Supprimer la parcelle #${id} ?\n\nCette action est irréversible.`);
+    if (!confirmed) return;
+
+    try {
+        showLoadingMessage('Suppression en cours...');
+        const res = await fetch(API_URL + 'delete_parcelle.php', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ id: id })
+        });
+        const result = await res.json();
+        hideLoadingMessage();
+
+        if (result.success) {
+            alert(`✅ Parcelle #${id} supprimée avec succès.`);
+            cancelEdit();
+            await loadParcelles();
+            updateStatistics();
+        } else {
+            alert('❌ Erreur : ' + result.error);
+        }
+    } catch (err) {
+        hideLoadingMessage();
+        alert('❌ Erreur réseau : ' + err.message);
+    }
 }
 
 // Annuler l'édition
