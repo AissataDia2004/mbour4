@@ -1,131 +1,116 @@
 <?php
-ob_start(); // ← capture tout output parasite
+ob_start();
 ini_set('display_errors', 0);
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
 
-try {
-    require_once __DIR__ . '/../config_supabase.php';
+require_once __DIR__ . '/../config/api_auth.php';
+requireApiEdit(); // ← bloque si non connecté ou pas éditeur
 
-    // vider le buffer avant d'envoyer le JSON
-    ob_clean();
+require_once __DIR__ . '/../config_supabase.php';
+require_once __DIR__ . '/log_activite.php';
+ob_clean();
 
-    if (!defined('SUPABASE_URL') || !defined('SUPABASE_ANON_KEY')) {
-        throw new Exception('Configuration Supabase manquante');
-    }
+$raw  = file_get_contents('php://input');
+$data = json_decode($raw, true);
 
-    $raw  = file_get_contents('php://input');
-    $data = json_decode($raw, true);
-
-    if (!$data) {
-        throw new Exception('Données JSON invalides : ' . json_last_error_msg());
-    }
-
-    // ── 1. Récupérer le prochain ID ──────────────────────────
-    $url = SUPABASE_URL . '/rest/v1/parcelle?select=id&order=id.desc&limit=1';
-    $headers = [
-        'apikey: ' . SUPABASE_ANON_KEY,
-        'Authorization: Bearer ' . SUPABASE_ANON_KEY,
-        'Content-Type: application/json'
-    ];
-
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_HTTPHEADER,     $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT,        10);
-    $resp     = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlErr  = curl_error($ch);
-    curl_close($ch);
-
-    if ($curlErr) throw new Exception('cURL error (get ID): ' . $curlErr);
-    if ($httpCode !== 200) throw new Exception("Supabase get ID HTTP $httpCode: $resp");
-
-    $rows  = json_decode($resp, true);
-    $maxId = isset($rows[0]['id']) ? (int)$rows[0]['id'] : 0;
-    $newId = $maxId + 1;
-
-    // ── 2. Préparer la géométrie ─────────────────────────────
-    $geomRaw = $data['geom'] ?? null;
-    $geomObj = null;
-
-    if ($geomRaw) {
-        if (is_string($geomRaw)) {
-            $geomDecoded = json_decode($geomRaw, true);
-        } else {
-            $geomDecoded = $geomRaw;
-        }
-
-        if ($geomDecoded && $geomDecoded['type'] === 'Polygon') {
-            $geomObj = [
-                'type'        => 'MultiPolygon',
-                'coordinates' => [$geomDecoded['coordinates']]
-            ];
-        } else {
-            $geomObj = $geomDecoded;
-        }
-    }
-
-    // ── 3. Construire le payload ─────────────────────────────
-    $payload = [
-        'id'                 => $newId,
-        'n_parcelle'         => $data['n_parcelle']         ?? null,
-        'liste_attributaire' => $data['liste_attributaire'] ?? null,
-        'attribution_2026'   => $data['attribution_2026']   ?? null,
-        'prenom_nom'         => $data['prenom_nom']         ?? null,
-        'cni'                => $data['cni']                ?? null,
-        'tel'                => $data['tel']                ?? null,
-        'recensement'        => $data['recensement']        ?? null,
-        'observation'        => $data['observation']        ?? null,
-        'recommendation'     => $data['recommendation']     ?? null,
-        'statut'             => $data['statut']             ?? 'non affecté',
-    ];
-
-    if ($geomObj) {
-        $payload['geom'] = $geomObj;
-    }
-
-    // ── 4. Insérer dans Supabase ─────────────────────────────
-    $insertUrl = SUPABASE_URL . '/rest/v1/parcelle';
-    $insertHeaders = [
-        'apikey: ' . SUPABASE_ANON_KEY,
-        'Authorization: Bearer ' . SUPABASE_ANON_KEY,
-        'Content-Type: application/json',
-        'Prefer: return=minimal'
-    ];
-
-    $ch2 = curl_init($insertUrl);
-    curl_setopt($ch2, CURLOPT_HTTPHEADER,     $insertHeaders);
-    curl_setopt($ch2, CURLOPT_POST,           true);
-    curl_setopt($ch2, CURLOPT_POSTFIELDS,     json_encode($payload));
-    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch2, CURLOPT_TIMEOUT,        15);
-    $resp2     = curl_exec($ch2);
-    $httpCode2 = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
-    $curlErr2  = curl_error($ch2);
-    curl_close($ch2);
-
-    if ($curlErr2) throw new Exception('cURL error (insert): ' . $curlErr2);
-
-    ob_clean(); // ← vider encore avant le JSON final
-    if ($httpCode2 === 201 || $httpCode2 === 200) {
-        echo json_encode([
-            'success' => true,
-            'id'      => $newId,
-            'message' => "Parcelle #$newId créée avec succès"
-        ]);
-    } else {
-        $errBody = json_decode($resp2, true);
-        $errMsg  = $errBody['message'] ?? $errBody['error'] ?? $resp2;
-        throw new Exception("Supabase insert HTTP $httpCode2 : $errMsg");
-    }
-
-} catch (Exception $e) {
-    ob_clean(); // ← vider avant l'erreur JSON
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error'   => $e->getMessage()
-    ]);
+if (!$data) {
+    echo json_encode(['success' => false, 'error' => 'Données JSON invalides']);
+    exit;
 }
-?>
+
+// ── 1. Prochain ID ──
+$url = SUPABASE_URL . '/rest/v1/parcelle?select=id&order=id.desc&limit=1';
+$headers = [
+    'apikey: '        . SUPABASE_ANON_KEY,
+    'Authorization: Bearer ' . SUPABASE_ANON_KEY,
+    'Content-Type: application/json'
+];
+
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_HTTPHEADER,     $headers);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_TIMEOUT,        10);
+$resp     = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+if ($httpCode !== 200) {
+    ob_clean();
+    echo json_encode(['success' => false, 'error' => "Supabase get ID HTTP $httpCode"]);
+    exit;
+}
+
+$rows  = json_decode($resp, true);
+$maxId = isset($rows[0]['id']) ? (int)$rows[0]['id'] : 0;
+$newId = $maxId + 1;
+
+// ── 2. Géométrie Polygon → MultiPolygon ──
+$geomRaw = $data['geom'] ?? null;
+$geomObj = null;
+
+if ($geomRaw) {
+    $geomDecoded = is_string($geomRaw) ? json_decode($geomRaw, true) : $geomRaw;
+    if ($geomDecoded && $geomDecoded['type'] === 'Polygon') {
+        $geomObj = [
+            'type'        => 'MultiPolygon',
+            'coordinates' => [$geomDecoded['coordinates']]
+        ];
+    } else {
+        $geomObj = $geomDecoded;
+    }
+}
+
+// ── 3. Payload ──
+$payload = [
+    'id'                 => $newId,
+    'n_parcelle'         => $data['n_parcelle']         ?? null,
+    'liste_attributaire' => $data['liste_attributaire'] ?? null,
+    'attribution_2026'   => $data['attribution_2026']   ?? null,
+    'prenom_nom'         => $data['prenom_nom']         ?? null,
+    'cni'                => $data['cni']                ?? null,
+    'tel'                => $data['tel']                ?? null,
+    'recensement'        => $data['recensement']        ?? null,
+    'observation'        => $data['observation']        ?? null,
+    'recommendation'     => $data['recommendation']     ?? null,
+    'statut'             => $data['statut']             ?? 'non affecté',
+];
+if ($geomObj) $payload['geom'] = $geomObj;
+
+// ── 4. Insertion ──
+$insertUrl = SUPABASE_URL . '/rest/v1/parcelle';
+$insertHeaders = [
+    'apikey: '        . SUPABASE_ANON_KEY,
+    'Authorization: Bearer ' . SUPABASE_ANON_KEY,
+    'Content-Type: application/json',
+    'Prefer: return=minimal'
+];
+
+$ch2 = curl_init($insertUrl);
+curl_setopt($ch2, CURLOPT_HTTPHEADER,     $insertHeaders);
+curl_setopt($ch2, CURLOPT_POST,           true);
+curl_setopt($ch2, CURLOPT_POSTFIELDS,     json_encode($payload));
+curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch2, CURLOPT_TIMEOUT,        15);
+$resp2     = curl_exec($ch2);
+$httpCode2 = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
+curl_close($ch2);
+
+ob_clean();
+if ($httpCode2 === 201 || $httpCode2 === 200) {
+    // ── LOG ──
+    logActivite('ajout', 'parcelle', $newId, [
+        'n_parcelle'  => $payload['n_parcelle'],
+        'prenom_nom'  => $payload['prenom_nom'],
+        'statut'      => $payload['statut'],
+    ]);
+    echo json_encode([
+        'success' => true,
+        'id'      => $newId,
+        'message' => "Parcelle #$newId créée avec succès"
+    ]);
+} else {
+    $errBody = json_decode($resp2, true);
+    $errMsg  = $errBody['message'] ?? $errBody['error'] ?? $resp2;
+    echo json_encode(['success' => false, 'error' => "Supabase insert HTTP $httpCode2 : $errMsg"]);
+}

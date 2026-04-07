@@ -7,37 +7,32 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
+require_once __DIR__ . '/../config/api_auth.php';
+requireApiEdit();
+
 require_once __DIR__ . '/../config_supabase.php';
+require_once __DIR__ . '/log_activite.php';
 ob_clean();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Méthode non autorisée']);
-    exit();
+    exit;
 }
 
 $input = file_get_contents('php://input');
-$data = json_decode($input, true);
+$data  = json_decode($input, true);
 
-if (!$data) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Données invalides']);
-    exit();
-}
+if (!$data) { http_response_code(400); echo json_encode(['error' => 'Données invalides']); exit; }
 
 $id = $data['id'] ?? null;
-if (!$id) {
-    http_response_code(400);
-    echo json_encode(['error' => 'ID manquant']);
-    exit();
-}
+if (!$id) { http_response_code(400); echo json_encode(['error' => 'ID manquant']); exit; }
 
-$allowed_fields = ['liste_attributaire', 'attribution_2026', 'prenom_nom', 'n_parcelle', 'cni', 'tel', 'recensement', 'observation', 'recommendation'];
+$allowed_fields = [
+    'liste_attributaire', 'attribution_2026', 'prenom_nom',
+    'n_parcelle', 'cni', 'tel', 'recensement', 'observation', 'recommendation'
+];
 
 $update_data = [];
 foreach ($data as $key => $value) {
@@ -54,7 +49,7 @@ if (isset($data['prenom_nom'])) {
 if (empty($update_data)) {
     http_response_code(400);
     echo json_encode(['error' => 'Aucun champ à mettre à jour']);
-    exit();
+    exit;
 }
 
 $filter = "id=eq.$id";
@@ -63,13 +58,12 @@ $result = supabaseUpdate('parcelle', $filter, $update_data);
 ob_clean();
 if (isset($result['error'])) {
     http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'error'   => $result['error'],
-        'details' => $result['response'] ?? null
-    ], JSON_UNESCAPED_UNICODE);
-    exit();
+    echo json_encode(['success' => false, 'error' => $result['error']], JSON_UNESCAPED_UNICODE);
+    exit;
 }
+
+// ── LOG ──
+logActivite('modification', 'parcelle', (int)$id, $update_data);
 
 echo json_encode([
     'success' => true,
