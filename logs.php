@@ -418,7 +418,7 @@ foreach ($logs as $log) {
             <option value="Service Cadastre">Cadastre</option>
             <option value="Service Domaine">Domaine</option>
             <option value="Gouverneur">Gouverneur</option>
-            <option value="DGIA">DGIA</option>
+            <option value="DGUA">DGUA</option>
         </select>
 
         <label>Recherche</label>
