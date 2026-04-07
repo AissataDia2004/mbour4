@@ -905,10 +905,6 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
                 <span class="b2">Géoportail de Thiès</span>
                 <span class="b3">Direction de l'Urbanisme, du Domaine & du Cadastre</span>
             </div>
-            <!-- Dans la nav-center de index.php -->
-            <?php if ($_SESSION['user'] === 'urbanisme'): ?>
-            <a href="logs.php" class="nav-link">📋 Logs</a>
-            <?php endif; ?>
         </a>
 
         <!-- bouton hamburger -->
@@ -927,6 +923,10 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
             <a href="#" class="nav-link">Cadastre</a>
             <a href="#" class="nav-link">Contact</a>
         </div>
+         <!-- Dans la nav-center de index.php -->
+            <?php if ($_SESSION['user'] === 'urbanisme'): ?>
+            <a href="logs.php" class="nav-link">📋 Logs</a>
+            <?php endif; ?>
 
         <div class="nav-right">
             <div class="user-chip">
