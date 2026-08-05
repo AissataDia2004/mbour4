@@ -356,7 +356,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="service-chip">
                     <div class="chip-icon purple"></div>
                     <div class="chip-text">
-                        <strong>DGIA</strong>
+                        <strong>DGUA</strong>
                         <span>Direction Générale de l'Urbanisme et de l'Architecture</span>
                     </div>
                 </div>
