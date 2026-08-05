@@ -310,7 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="device-text">Système d'information géographique</div>
             <div class="device-line"></div>
         </div>
-        <p class="subtitle-block">Ministère de l'Urbanisme, du Logement et de l'Hygiène Publique</p>
+        <p class="subtitle-block">Ministère de l'Urbanisme, des Collectivités territoriales et de l'Aménagement des Territoires</p>
     </div>
 
     <div class="main-layout">
