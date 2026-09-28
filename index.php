@@ -57,7 +57,7 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
         }
 
         .topbar-inner {
-            max-width: 1400px;
+            max-width: min(96vw, 2200px);
             margin: 0 auto;
             padding: 0 2rem;
             display: flex;
@@ -300,7 +300,7 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
         .page-header {
             background: linear-gradient(135deg, var(--vert-dk) 0%, var(--vert) 60%, #22a050 100%);
             color: white;
-            padding: 2.5rem 0;
+            padding: clamp(1rem, 2.5vh, 2.5rem) 0;
             position: relative;
             overflow: hidden;
         }
@@ -324,7 +324,7 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
         }
 
         .header-inner {
-            max-width: 1400px;
+            max-width: min(96vw, 2200px);
             margin: 0 auto;
             padding: 0 2rem;
             display: flex;
@@ -383,15 +383,16 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
            GEOPORTAIL SECTION
            =========================== */
         .geo-section {
-            max-width: 1400px;
+            max-width: min(96vw, 2200px);
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem clamp(1rem, 2vw, 2.5rem);
         }
 
         .geo-grid {
             display: grid;
-            grid-template-columns: 1fr 320px;
+            grid-template-columns: minmax(0, 1fr) clamp(320px, 24vw, 480px);
             gap: 1.5rem;
+            align-items: start;
         }
 
         /* MAP AREA */
@@ -518,9 +519,16 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
 
         .commune-check input { accent-color: var(--vert); }
 
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            /* prend la hauteur de l'écran moins l'en-tête, avec un minimum */
+            height: clamp(560px, calc(100vh - 340px), 1200px);
+        }
+
         #map {
             width: 100%;
-            height: 560px;
+            height: 100%;
         }
 
         /* SIDEBAR */
@@ -564,6 +572,8 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
             padding: 1.25rem;
         }
 
+        .panel-body canvas { max-height: 260px; }
+
         .no-selection {
             text-align: center;
             color: var(--muted);
@@ -600,7 +610,6 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
         /* ===== BASEMAP SWITCHER ===== */
         .basemap-control {
             position: absolute;
-            bottom: 24px;
             top: 10px;
             right: 16px;
             z-index: 1000;
@@ -690,7 +699,7 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
         }
 
         .footer-inner {
-            max-width: 1400px;
+            max-width: min(96vw, 2200px);
             margin: 0 auto;
             padding: 0 2rem;
         }
@@ -835,7 +844,7 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
         }
 
         .footer-bottom-inner {
-            max-width: 1400px;
+            max-width: min(96vw, 2200px);
             margin: 0 auto;
             padding: 0 2rem;
             display: flex;
@@ -875,6 +884,13 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
             .header-badge { display: none; }
             .footer-grid { grid-template-columns: 1fr; }
             .footer-bottom-links { display: none; }
+        }
+
+        @media (min-width: 1800px) {
+            html { font-size: 17px; }
+        }
+        @media (min-width: 2400px) {
+            html { font-size: 20px; }
         }
     </style>
 </head>
@@ -1045,10 +1061,10 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
             </div>
 
 <!-- Map + contrôles superposés -->
-            <div style="position:relative; width:100%; height:560px;">
+            <div class="map-wrapper">
 
                 <!-- Carte Leaflet -->
-                <div id="map" style="width:100%; height:100%;"></div>
+                <div id="map"></div>
 
                 <!-- Basemap Switcher — par-dessus la carte -->
                 <div class="basemap-control" id="basemapControl" style="position:absolute; top:10px; right:16px; z-index:1000;">
