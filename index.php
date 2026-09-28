@@ -1518,6 +1518,7 @@ $peutEditer = canEdit(); // true = urbanisme/cadastre, false = visiteur
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="geolocation.js"></script>    
 <script src="geoportail.js"></script>
 </body>
 </html>
