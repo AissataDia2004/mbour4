@@ -42,6 +42,7 @@ function initMap() {
         position: 'bottomright',
         imperial: false
     }).addTo(map);
+    initLocation();
 }
 window.addEventListener('resize', () => {
     map.invalidateSize();
