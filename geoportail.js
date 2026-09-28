@@ -43,14 +43,6 @@ function initMap() {
         imperial: false
     }).addTo(map);
 }
-window.addEventListener('resize', () => {
-    map.invalidateSize();
-});
-
-// Réagit aussi aux changements de taille du conteneur
-new ResizeObserver(() => map.invalidateSize())
-    .observe(document.querySelector('.map-wrapper'));
-
 
 // Charger toutes les couches
 async function loadAllLayers() {
